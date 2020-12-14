@@ -1,0 +1,45 @@
+<form>
+  <label>CISCO ESA - Lookup</label>
+  <fieldset submitButton="true">
+    <input type="text" token="tok_email">
+      <label>Sender / Receiver</label>
+      <default>*@domain</default>
+    </input>
+    <input type="text" token="tok_subject">
+      <label>Subject</label>
+      <default>*</default>
+    </input>
+    <input type="text" token="tok_size">
+      <label>Minimum Size (KiB)</label>
+      <default>0</default>
+    </input>
+    <input type="time" token="tok_time">
+      <label></label>
+      <default>
+        <earliest>-15m</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <title>Emails from $tok_email$</title>
+      <table>
+        <search>
+          <query>index="email" sourcetype="cisco:esa:legacy" 
+    [| search index=email_gw sourcetype="cisco:esa:legacy" (mailfrom="$tok_email$" OR mailto="$tok_email$")
+    | fields mid, host] 
+| transaction mid maxevents=50 maxspan=120s endswith="Message finished MID"
+| eval message_size_kb=round(message_size/1024,2)
+| search subject="$tok_subject$" message_size_kb&gt;$tok_size$
+| table _time, sender, recipient, subject, message_size_kb, av_verdict, mid
+| rename sender as "Sender", recipient as "Recipient", subject as "Subject", message_size_kb as "Message Size (KiB)", av_verdict as "AV", mid as "Message ID"</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="count">50</option>
+        <option name="drilldown">none</option>
+      </table>
+    </panel>
+  </row>
+</form>

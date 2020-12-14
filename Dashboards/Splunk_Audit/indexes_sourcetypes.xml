@@ -1,0 +1,36 @@
+<form>
+  <label>Indexes &amp; Sourcetypes</label>
+  <fieldset submitButton="true" autoRun="true">
+    <input type="time" token="tok_time">
+      <label></label>
+      <default>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <table>
+        <search>
+          <query>| dbinspect index=* 
+| search index!="_*" 
+| fields index 
+| dedup index 
+| map 
+    [| metadata type=sourcetypes index="$$index$$" 
+    | eval type="$$index$$"] maxsearches=1000 
+| stats values(totalCount) as totalcount, values(sourcetype) as sourcetype by type 
+| fields type, sourcetype, totalcount 
+| sort type 
+| rename type as "Index", sourcetype as "Sourcetype", totalcount as "Events"</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="count">10</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+</form>

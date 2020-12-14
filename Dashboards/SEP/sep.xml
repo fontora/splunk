@@ -1,0 +1,242 @@
+<form>
+  <label>SEP</label>
+  <fieldset submitButton="true" autoRun="true">
+    <input type="time" token="tok_time">
+      <label></label>
+      <default>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <title>Blocked Processes over Time</title>
+      <chart>
+        <search>
+          <query>index="av" sourcetype="symantec:ep:behavior:file" action="blocked" 
+| timechart span=5m count by severity</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.text">Count</option>
+        <option name="charting.axisTitleY.visibility">collapsed</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">log</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Top Blocked Processes</title>
+      <chart>
+        <search>
+          <query>index="av" sourcetype="symantec:ep:behavior:file" action="blocked"
+| rex field=process ".*[\\\/](?&lt;process_name&gt;\S+)"
+| top process_name</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">collapsed</option>
+        <option name="charting.chart">bar</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.legend.placement">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Top Risks</title>
+      <chart>
+        <search>
+          <query>index=av sourcetype="symantec:ep:risk:file"
+| stats count by signature 
+| sort - count
+| head 10
+| rename signature as "Risk Signature", count as "Count"</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">collapsed</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">bar</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.placement">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Top Intrusion Types</title>
+      <chart>
+        <search>
+          <query>index=av sourcetype="symantec:ep:security:file"
+| stats count by "category" 
+| sort - count
+| head 10
+| rename category as "Category", count as "Count"</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>On-Demand Scan - Infections</title>
+      <table>
+        <title>Last 30 Days, Latest 25 Results</title>
+        <search>
+          <query>index="av" sourcetype="symantec:ep:scan:file" Infected_Files!=0 
+| stats latest(_time) as _time by dest, dest_ip, Infected_Files, Total_Files, Omitted_Files
+| head 25
+| fields _time, dest, dest_ip, Infected_Files, Total_Files, Omitted_Files
+| sort - _time
+| rename dest as "Server", dest_ip as "IP Address", Infected_Files as "Infected Files", Total_Files as "Total Files", Omitted_Files as "Omitted Files"</query>
+          <earliest>-30d@d</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="count">10</option>
+        <option name="refresh.display">progressbar</option>
+        <format type="number" field="Infected Files">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="Infected Files">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="Total Files">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="Infected Files">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="Infected Files">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="Total Files">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="Omitted Files">
+          <option name="precision">0</option>
+        </format>
+      </table>
+    </panel>
+    <panel>
+      <title>Proactive Detections</title>
+      <table>
+        <title>Last 30 Days, Top 25 Results</title>
+        <search>
+          <query>index=av sourcetype="symantec:ep:proactive:file" 
+| top 25 showperc=f signature, Risk_Name, file_path by action
+| rename action as "Action", signature as "Signature", Risk_Name as "Risk", file_path as "Path", count as "Count"</query>
+          <earliest>-30d@d</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Manager Status Logs</title>
+      <table>
+        <search>
+          <query>index=av sourcetype="symantec:ep:scm_system:file" NOT Event_Description IN ("*swept*", "No updates found for*", "*There were no new content updates*", "Sending Email Failed for*")
+| top 50 Event_Description by host
+| rename host as "SEP Manager", Event_Description as "Message", count as "Count", percent as "Percent"</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="count">10</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <format type="number" field="Percent"></format>
+        <format type="number" field="Percent"></format>
+        <format type="number" field="Count">
+          <option name="precision">0</option>
+        </format>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Agent Status Logs</title>
+      <table>
+        <search>
+          <query>index="av" sourcetype="symantec:ep:agt_system:file" Event_Description IN ("*failed*", "*unable*", "*terminate*") NOT Event_Description IN ("*.dax", "*.zip") 
+| top 50 Event_Description
+| rename Event_Description as "Message", count as "Count", percent as "Percent"</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="count">10</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <format type="number" field="Count">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="Count">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="Percent"></format>
+      </table>
+    </panel>
+  </row>
+</form>

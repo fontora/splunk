@@ -1,0 +1,103 @@
+<form>
+  <label>Rsyslog Stats</label>
+  <fieldset submitButton="true" autoRun="true">
+    <input type="time" token="tok_time">
+      <label></label>
+      <default>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <title>Logs Recieved</title>
+      <chart>
+        <search>
+          <query>index=os_lin sourcetype=rsyslog (origin=imptcp OR origin=imudp) submitted=*
+| rex field=_raw "p\((?&lt;listen&gt;[^\)]+)"
+| streamstats current=f last(submitted) as prev_submitted by listen
+| eval delta_submitted=if(isnull(prev_submitted), 0, abs(prev_submitted-submitted))
+| timechart partial=f span=1m values(delta_submitted) as "Submitted" by listen</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="charting.axisY.scale">log</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Logs Written</title>
+      <chart>
+        <search>
+          <query>index=os_lin sourcetype=rsyslog origin=omfile
+| rex field=_raw "dynafile cache (?&lt;log&gt;[^:]+)"
+| stats latest(requests) as requests by log
+| rename log as "Log", request as "Writes"</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">collapsed</option>
+        <option name="charting.axisY.scale">log</option>
+        <option name="charting.chart">bar</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.legend.placement">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Rules Matched</title>
+      <chart>
+        <search>
+          <query>index=os_lin sourcetype=rsyslog origin="core.queue" 
+| rex field=_raw "rsyslogd-pstats: (?&lt;rule&gt;[^:]+)" 
+| streamstats current=f last(enqueued) as prev_enqueued by rule
+| eval delta_enqueued=if(isnull(prev_enqueued), 0, abs(prev_enqueued-enqueued))
+| timechart partial=f span=1m values(delta_enqueued) as "Enqueued" by rule</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">collapsed</option>
+        <option name="charting.axisY.scale">log</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Processing Stats</title>
+      <chart>
+        <search>
+          <query>index=os_lin sourcetype=rsyslog origin=impstats 
+| streamstats current=f last(minflt) as prev_minflt, last(majflt) as prev_majflt, last(oublock) as prev_oublock, last(nivcsw) as prev_nivcsw 
+| eval delta_minflt=if(isnull(prev_minflt), 0, abs(prev_minflt-minflt)),
+    delta_majflt=if(isnull(prev_majflt), 0, abs(prev_majflt-majflt)),
+    delta_oublock=if(isnull(prev_oublock), 0, abs(prev_oublock-oublock)),
+    delta_nivcsw=if(isnull(prev_nivcsw), 0, abs(prev_nivcsw-nivcsw)) 
+| timechart partial=f span=1m values(delta_minflt) as "Minor Faults", values(delta_majflt) as "Major Faults", values(delta_oublock) as "Output Operations", values(delta_nivcsw) as "Involuntary Context Switches"</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">collapsed</option>
+        <option name="charting.axisTitleY2.visibility">collapsed</option>
+        <option name="charting.chart">area</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.legend.placement">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">1</option>
+        <option name="trellis.scales.shared">0</option>
+      </chart>
+    </panel>
+  </row>
+</form>

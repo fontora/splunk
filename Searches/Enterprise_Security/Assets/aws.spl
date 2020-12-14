@@ -1,0 +1,33 @@
+index="aws" sourcetype="aws:description" source="*:ec2_instances" 
+| fillnull value="" ip_address, private_ip_address, dns_name, private_dns_name 
+| stats values(ip_address) as ip_address,
+    values(private_ip_address) as private_ip_address,
+    values(dns_name) as dns_name,
+    values(private_dns_name) as private_dns_name,
+    latest(key_name) as owner,
+    latest(region) as region,
+    latest(placement) as placement,
+    values(tags.Name) as tag_name,
+    latest(aws_account_id) as bunit, 
+    latest(image.attributes.name) as os,
+    by id 
+| eval ip=mvjoin(mvappend(
+    if(ip_address=="null" OR ip_address=="", null(), ip_address),
+    if(private_ip_address=="null" OR private_ip_address="", null(), private_ip_address)), "|"),
+    dns=mvjoin(mvappend(
+      if(dns_name=="null" OR dns_name=="", null(), dns_name),
+      if(private_dns_name=="null" OR private_dns_name="", null(), private_dns_name)), "|") 
+| rex field=dns "^(?<nt_host>[^\.]+)" 
+| rex field=os "^(?<os>[^-]+)" 
+| eval nt_host=upper(nt_host),
+    category=mvjoin(mvappend(
+      "aws_tag_name:".tag_name,
+      "aws_placement:".placement,
+      "type:virtual",
+      "type:aws_ec2",
+      "os:".os), "|"),
+    priority=case(match(category, "demo|test|dev|uat|lab"), "low", 1==1, "medium") 
+| dedup nt_host 
+| table ip, mac, nt_host, dns, owner, priority, lat, long, city, country, bunit, category, pci_domain, is_expected, should_timesync, should_update, requires_av, cim_entity_zone
+| outputlookup org_aws_assets
+| stats count

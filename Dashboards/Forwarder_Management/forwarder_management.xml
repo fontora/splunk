@@ -1,0 +1,529 @@
+<form script="splunk_ps_tabs:tabs.js" stylesheet="splunk_ps_tabs:tabs.css">
+  <label>Forwarder Management</label>
+  <fieldset submitButton="false"></fieldset>
+  <row id="tabs">
+    <panel>
+      <html>
+        <ul id="tabs" class="nav nav-tabs">
+          <li class="active">
+            <a href="#" class="toggle-tab" data-toggle="tab" data-elements="tab_overview1,tab_overview2,tab_overview3,tab_overview4">Overview</a>
+          </li>
+          <li>
+            <a href="#" class="toggle-tab" data-toggle="tab" data-elements="tab_oneapp">One App</a>
+          </li>
+          <li>
+            <a href="#" class="toggle-tab" data-toggle="tab" data-elements="tab_app">Apps</a>
+          </li>
+          <li>
+            <a href="#" class="toggle-tab" data-toggle="tab" data-elements="tab_sc">Server Class</a>
+          </li>
+          <li>
+            <a href="#" class="toggle-tab" data-toggle="tab" data-elements="tab_search">Search</a>
+          </li>          
+        </ul>
+      </html>
+    </panel>
+  </row>
+  <row id="tab_overview1">
+    <panel>
+      <title>Dial Homes</title>
+      <single>
+        <search>
+          <query>| inputlookup forwarders.csv 
+| stats count</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="colorBy">value</option>
+        <option name="colorMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="numberPrecision">0</option>
+        <option name="rangeColors">["0x53a051","0x006d9c","0xf8be34","0xf1813f","0xdc4e41"]</option>
+        <option name="rangeValues">[5000,10000,15000,20000]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="showSparkline">1</option>
+        <option name="showTrendIndicator">1</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+        <option name="trendColorInterpretation">standard</option>
+        <option name="trendDisplayMode">absolute</option>
+        <option name="unitPosition">after</option>
+        <option name="useColors">1</option>
+        <option name="useThousandSeparators">1</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Only 1 App</title>
+      <single>
+        <search>
+          <query>| inputlookup forwarders.csv 
+| table hostname, applications*.stateOnClient 
+| untable hostname applications value 
+| stats count(applications) as "count" by hostname 
+| where count&lt;2 
+| fields hostname 
+| stats count</query>
+        </search>
+        <option name="colorBy">value</option>
+        <option name="colorMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="numberPrecision">0</option>
+        <option name="rangeColors">["0x53a051","0xf8be34","0xdc4e41"]</option>
+        <option name="rangeValues">[0,10]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="showSparkline">1</option>
+        <option name="showTrendIndicator">1</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+        <option name="trendColorInterpretation">standard</option>
+        <option name="trendDisplayMode">absolute</option>
+        <option name="unitPosition">after</option>
+        <option name="useColors">1</option>
+        <option name="useThousandSeparators">1</option>
+      </single>
+    </panel>
+  </row>
+  <row id="tab_overview2">
+    <panel>
+      <title>Apps</title>
+      <chart>
+        <search>
+          <query>| inputlookup forwarders.csv 
+| table applications*.stateOnClient 
+| fieldsummary 
+| table field, count 
+| rex field=field "applications\.(?&lt;field&gt;[^\.]+)"</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">collapsed</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">log</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">bar</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">none</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Version</title>
+      <chart>
+        <search>
+          <query>| inputlookup forwarders.csv 
+| table splunkVersion 
+| fieldsummary 
+| table field, values 
+| spath input=values 
+| rename "{}.count" as mv_count1, "{}.value" as mv_value1 
+| eval mv_join1=mvzip(mv_count1, mv_value1) 
+| mvexpand mv_join1 
+| eval mv_join2=split(mv_join1, ",") 
+| eval count=mvindex(mv_join2, 0) 
+| eval version=mvindex(mv_join2, 1) 
+| table version, count
+| sort -version</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">collapsed</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">log</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">column</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">none</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+  </row>
+  <row id="tab_overview3">
+    <panel>
+      <title>Splunk Type</title>
+      <chart>
+        <search>
+          <query>| inputlookup forwarders.csv 
+| table package 
+| fieldsummary 
+| table field, values 
+| spath input=values 
+| rename "{}.count" as mv_count1, "{}.value" as mv_value1 
+| eval mv_join1=mvzip(mv_count1, mv_value1) 
+| mvexpand mv_join1 
+| eval mv_join2=split(mv_join1, ",") 
+| eval count=mvindex(mv_join2, 0) 
+| eval package=mvindex(mv_join2, 1) 
+| table package, count</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">collapsed</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">log</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">none</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Operating System</title>
+      <chart>
+        <search>
+          <query>| rest /services/deployment/server/clients/countClients_by_machineType splunk_server=local 
+| table counts.* 
+| transpose column_name="os_type" 
+| rex field=os_type "\.(?&lt;os_type&gt;.*)" 
+| rename os_type as "OS Type", "row 1" as "Count"</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">collapsed</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">log</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">none</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Management Port</title>
+      <chart>
+        <search>
+          <query>| inputlookup forwarders.csv 
+| table mgmt 
+| fieldsummary 
+| table field, values 
+| spath input=values 
+| rename "{}.count" as mv_count1, "{}.value" as mv_value1 
+| eval mv_join1=mvzip(mv_count1, mv_value1) 
+| mvexpand mv_join1 
+| eval mv_join2=split(mv_join1, ",") 
+| eval count=mvindex(mv_join2, 0) 
+| eval port=mvindex(mv_join2, 1) 
+| table port, count</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">collapsed</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">log</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">none</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+  </row>
+  <row id="tab_overview4">
+    <panel>
+      <title>Overview</title>
+      <table>
+        <search>
+          <query>| inputlookup forwarders.csv 
+| table applications*.stateOnClient, mgmt, package, splunkVersion, utsname 
+| fieldsummary 
+| table field, count, distinct_count, values 
+| spath input=values 
+| fields - values
+| rex field=field "applications\.(?&lt;field&gt;[^\.]+)" 
+| rename field as "Setting", count as "Total Count", distinct_count as "Distinct Count", "{}.value" as "Value", "{}.count" as "Value Count"</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="count">20</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+  <row id="tab_oneapp">
+    <panel>
+      <title>Only 1 App</title>
+      <table>
+        <search>
+          <query>| inputlookup forwarders.csv 
+| search 
+    [| inputlookup forwarders.csv 
+    | table hostname, applications*.stateOnClient 
+    | untable hostname applications value 
+    | stats count(applications) as "count" by hostname 
+    | where count&lt;2 
+    | fields hostname ] 
+| eval lastPhoneHomeTime=strftime(lastPhoneHomeTime, "%F %T") 
+| table hostname, ip, utsname, splunkVersion, mgmt, lastPhoneHomeTime, averagePhoneHomeInterval, guid, package 
+| rename hostname as "Server", ip as "IP", utsname as "OS Type", splunkVersion as "Version", mgmt as "Port", lastPhoneHomeTime as "Last Phone Home", averagePhoneHomeInterval as "Avg. Phone Home", guid as "GUID", package as "Type"</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="count">100</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+  <row id="tab_app">
+    <panel>
+      <title>App Overview</title>
+      <table>
+        <search>
+          <query>| rest splunk_server=local /services/deployment/server/applications 
+| table title, serverclasses, stateOnClient, restartSplunkd 
+| eval restartSplunkd=if(restartSplunkd==1, "True", "False") 
+| eval stateOnClient=upper(substr(stateOnClient,1,1)).substr(stateOnClient,2) 
+| rename title as "App", serverclasses as "Server Class", stateOnClient as "Status", restartSplunkd as "Restart?"</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">50</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+  <row id="tab_sc">
+    <panel>
+      <title>Server Classes</title>
+      <table>
+        <search>
+          <query>| rest splunk_server=local /services/deployment/server/applications 
+| table title, serverclasses 
+| mvexpand serverclasses 
+| mvcombine title 
+| table serverclasses, title 
+| rename title as "App", serverclasses as "Server Class"</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">50</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+  <row id="tab_search">
+    <panel>
+      <input type="text" token="token_search" searchWhenChanged="true">
+        <label>Server or IP</label>
+        <default>*</default>
+      </input>
+      <input type="dropdown" token="token_apps" searchWhenChanged="true">
+        <label>Apps</label>
+        <fieldForLabel>title</fieldForLabel>
+        <fieldForValue>title</fieldForValue>
+        <search>
+          <query>| rest splunk_server=local /services/deployment/server/applications 
+| table title</query>
+        </search>
+        <choice value="*">ALL</choice>
+        <default>*</default>
+      </input>
+      <input type="dropdown" token="token_os" searchWhenChanged="true">
+        <label>OS</label>
+        <fieldForLabel>os_fancy</fieldForLabel>
+        <fieldForValue>os_orig</fieldForValue>
+        <search>
+          <query>| rest /services/deployment/server/clients/countClients_by_machineType splunk_server=local 
+| transpose column_name="os_type" 
+| search os_type="counts.*" 
+| rex field=os_type "\.(?&lt;os_orig&gt;(?&lt;os_base&gt;[^-]+)-(?&lt;os_arch&gt;\S+))" 
+| eval os_fancy=os_base." (".os_arch.")" 
+| fields os_orig, os_fancy</query>
+        </search>
+        <choice value="*">ALL</choice>
+        <default>*</default>
+      </input>
+      <input type="dropdown" token="token_version" searchWhenChanged="true">
+        <label>Version</label>
+        <fieldForLabel>splunkVersion</fieldForLabel>
+        <fieldForValue>splunkVersion</fieldForValue>
+        <search>
+          <query>| inputlookup forwarders.csv 
+| table splunkVersion
+| sort 0 splunkVersion
+| uniq</query>
+        </search>
+        <choice value="*">ALL</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <input type="dropdown" token="token_port" searchWhenChanged="true">
+        <label>Port</label>
+        <fieldForLabel>mgmt</fieldForLabel>
+        <fieldForValue>mgmt</fieldForValue>
+        <search>
+          <query>| inputlookup forwarders.csv 
+| table mgmt
+| sort 0 mgmt
+| uniq</query>
+        </search>
+        <choice value="*">ALL</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <table>
+        <title>Forwarder Details</title>
+        <search>
+          <query>| inputlookup forwarders.csv 
+| join guid 
+    [| inputlookup forwarders.csv 
+    | table guid, applications*.stateOnClient 
+    | untable guid applications value 
+    | rex field=applications "applications\.(?&lt;applications&gt;[^\.]+)" 
+    | mvcombine applications 
+    | search value="enabled" 
+    | fields - value ] 
+| search hostname="$token_search$*" OR ip="$token_search$*" AND utsname="$token_os$" AND applications="*$token_apps$*" AND splunkVersion="$token_version$" AND mgmt="$token_port$" 
+| eval lastPhoneHomeTime=strftime(lastPhoneHomeTime, "%F %T") 
+| makemv delim=" " applications 
+| table hostname, ip, utsname, splunkVersion, applications, mgmt, lastPhoneHomeTime, averagePhoneHomeInterval, guid, package 
+| sort hostname 
+| rename hostname as "Server", ip as "IP", utsname as "OS Type", splunkVersion as "Version", applications as "Apps", mgmt as "Port", lastPhoneHomeTime as "Last Phone Home", averagePhoneHomeInterval as "Avg. Phone Home", guid as "GUID", package as "Type"</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="count">50</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+</form>

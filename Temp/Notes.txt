@@ -1,0 +1,141 @@
+###### DA-ESS-AccessProtection ######
+[gia_summary]
+coldPath = volume:cold/gia_summarydb/colddb
+homePath = volume:hotwarm/gia_summarydb/db
+thawedPath = $SPLUNK_DB/gia_summarydb/thaweddb
+ 
+###### DA-ESS-ThreatIntelligence ######
+[ioc]
+coldPath = volume:cold/iocdb/colddb
+homePath = volume:hotwarm/iocdb/db
+thawedPath = $SPLUNK_DB/iocdb/thaweddb
+ 
+[threat_activity]
+coldPath = volume:cold/threat_activitydb/colddb
+homePath = volume:hotwarm/threat_activitydb/db
+thawedPath = $SPLUNK_DB/threat_activitydb/thaweddb
+ 
+###### SA-AuditAndDataProtection ######
+[audit_summary]
+coldPath = volume:cold/audit_summarydb/colddb
+homePath = volume:hotwarm/audit_summarydb/db
+thawedPath = $SPLUNK_DB/audit_summarydb/thaweddb
+ 
+###### SA-EndpointProtection ######
+[endpoint_summary]
+coldPath = volume:cold/endpoint_summarydb/colddb
+homePath = volume:hotwarm/endpoint_summarydb/db
+thawedPath = $SPLUNK_DB/endpoint_summarydb/thaweddb
+ 
+###### SA-NetworkProtection ######
+[whois]
+coldPath = volume:cold/whoisdb/colddb
+homePath = volume:hotwarm/whoisdb/db
+thawedPath = $SPLUNK_DB/whoisdb/thaweddb
+ 
+###### SA-ThreatIntelligence ######
+[notable]
+coldPath = volume:cold/notabledb/colddb
+homePath = volume:hotwarm/notabledb/db
+thawedPath = $SPLUNK_DB/notabledb/thaweddb
+ 
+[notable_summary]
+coldPath = volume:cold/notable_summarydb/colddb
+homePath = volume:hotwarm/notable_summarydb/db
+thawedPath = $SPLUNK_DB/notable_summarydb/thaweddb
+ 
+[risk]
+coldPath = volume:cold/riskdb/colddb
+homePath = volume:hotwarm/riskdb/db
+thawedPath = $SPLUNK_DB/riskdb/thaweddb
+ 
+###### SplunkEnterpriseSecuritySuite ######
+[sequenced_events]
+coldPath = volume:cold/sequenced_eventsdb/colddb
+homePath = volume:hotwarm/sequenced_eventsdb/db
+thawedPath = $SPLUNK_DB/sequenced_eventsdb/thaweddb
+ 
+###### Splunk_SA_CIM ######
+[cim_modactions]
+coldPath = volume:cold/cim_modactionsdb/colddb
+homePath = volume:hotwarm/cim_modactionsdb/db
+thawedPath = $SPLUNK_DB/cim_modactionsdb/thaweddb
+ 
+###### Splunk_TA_ueba ######
+[ubaroute]
+coldPath = volume:cold/ubaroute/colddb
+homePath = volume:hotwarm/ubaroute/db
+thawedPath = $SPLUNK_DB/ubaroute/thaweddb
+ 
+[ueba]
+coldPath = volume:cold/uebadb/colddb
+homePath = volume:hotwarm/uebadb/db
+thawedPath = $SPLUNK_DB/uebadb/thaweddb
+ 
+###### scsproxy ######
+[missioncontrol]
+coldPath = volume:cold/missioncontrol/colddb
+homePath = volume:hotwarm/missioncontrol/db
+thawedPath = $SPLUNK_DB/missioncontrol/thaweddb
+
+
+
+| tstats count from datamodel=<datamodelname> by index
+
+
+
+Role
+
+Type of User
+
+ess_user
+
+Executive management or auditor who will not manage ES incidents or modify any settings or rules, but needs to see dashboards.
+
+ess_analyst
+
+Security Analyst or Engineer who will be a daily user of ES, will manage incidents, and use all dashboards in ES, but not modify any settings.
+
+admin
+
+Splunk and ES administrator who will have the ability to make any change, including modify rules, saved searches, dashboards, and incidents.
+
+
+
+
+[admon://DOMAINNAME]
+targetDc = PDC.domainname.com
+monitorSubtree = 1
+index = msad
+disabled = false
+## baseline = 1 will instruct the inputs to do a 1 time dump of all AD Objects.  Change to 0 after 24 hours (or remove config entirely in place of permanent one).
+baseline = 1
+## If you ever need to re-baseline your environment, remove var\lib\splunk\persistentstorage\ADMon* from the DC splunk forwarder and restart splunk
+##Depending on how long you store data in splunk, you may need to consider periodic re-baselines. Therefore you can schedule the removal of the above file and splunk restart
+##To ensure you always have a full data set in splunk.
+
+
+
+
+index=main objectCategory="CN=Person*"
+| dedup distinguishedName
+| rename distinguishedName as id, givenName as first, sn as last, department as bunit, mail as email
+| eval watchlist = "false"
+| eval identity = lower(sAMAccountName) + "|" + email
+| eval priority="medium"
+| eval startDateEpoch = strptime(whenCreated, "%H:%M.%S %p, %a %m/%d/%Y")
+| eval startDate = strftime(startDateEpoch, "%m/%d/%y %H:%M")
+| eval endDateEpoch = strptime(accountExpires, "%H:%M.%S %p, %a %m/%d/%Y")
+| eval endDate = strftime(endDateEpoch, "%m/%d/%y %H:%M")
+| table identity,prefix,nick,first,last,suffix,email,phone,phone2,managedBy,priority,bunit,category,watchlist,startDate,endDate,work_city,work_country,work_lat,work_long
+
+
+
+ | outputlookup create_empty=false createinapp=true override_if_empty=false <descriptive filename>.csv
+ 
+ 
+ Python for Scientific Computing (for Linux 64-bit)
+Splunk Machine Learning Toolkit
+
+
+MLTK app version 5.1.0 is now included in the ES installer. The previously generated models from MLTK 5.0 are compatible as-is. The previously generated models MLTK 4.x are not compatible and have to be regenerated. See Machine Learning Toolkit Overview in Splunk Enterprise Security for general information about models in MLTK 5.1.0.

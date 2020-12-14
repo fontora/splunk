@@ -1,0 +1,35 @@
+index=msad sourcetype=ActiveDirectory objectCategory="CN=Computer,CN=Schema,CN=Configuration,*" 
+| stats first(managedBy) as owner,
+    first(distinguishedName) as dn,
+    first(cn) as nt_host,
+    first(userAccountControl) as userAccountControl,
+    first(isDisabled) as isDisabled,
+    first(whenCreated) as whenCreated,
+    first(whenChanged) as whenChanged,
+    first(operatingSystem) as operatingSystem,
+    first(operatingSystemServicePack) as operatingSystemServicePack,
+    first(operatingSystemVersion) as operatingSystemVersion,
+    first(dNSHostName) as dns,
+    first(DC) as dc
+    by objectSid 
+| fillnull value="" ip, mac, priority, lat, long, city, country, bunit, category, pci_domain, is_expected, should_timesync, should_update, requires_av, cim_entity_zone 
+| fillnull value="unknown" operatingSystem, operatingSystemServicePack, operatingSystemVersion 
+| rex field=dn "OU=(?<dn_parsed>[^,]+)" 
+| eval nt_host=upper(nt_host),
+    dns=lower(dns),
+    priority=case(
+      match(category, "domain_controller|exchange|citrix"), "critical", 
+      match(category, "server|disabled"), "high", 
+      match(category, "workstation|desktop|mobile|laptop"), "medium", 
+      match(category, "staging|test|dev|lab"), "low", 
+      1==1, "unknown" ), 
+    is_expected=if(priority=="high" OR priority=="critical", "true", "false"),
+    category=mvjoin(mvappend(
+      "ad_domain:".dc,
+      "ad_ou:".lower(replace(mvjoin(dn_parsed, "|"), " ", "_")),
+      "os:".operatingSystem,
+      "os_sp:".operatingSystemServicePack,
+      "os_ver:".operatingSystemVersion), "|") 
+| table ip, mac, nt_host, dns, owner, priority, lat, long, city, country, bunit, category, pci_domain, is_expected, should_timesync, should_update, requires_av, cim_entity_zone
+| outputlookup org_admon_assets
+| stats count

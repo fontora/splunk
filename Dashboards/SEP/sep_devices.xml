@@ -1,0 +1,75 @@
+<form>
+  <label>SEP - Device Manager</label>
+  <fieldset submitButton="true" autoRun="true">
+    <input type="time" token="tok_time">
+      <label></label>
+      <default>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <title>Events over Time</title>
+      <chart>
+        <search>
+          <query>index=av sourcetype="symantec:ep:security:file" category="Device Manager*" 
+| rex field=Event_Description "Device Manager Message (?&lt;action&gt;\S+) the device\.\s+\[name\]:(?&lt;device_name&gt;[^\[]+)\[class\]:(?&lt;device_class&gt;[^\[]+)\[guid\]:(?&lt;device_guid&gt;[^\[]+)\[deviceID\]:(?&lt;device_id&gt;.*)" 
+| eval action=case(
+    action="allowed", "Allowed",
+    action="Enabled", "Allowed",
+    1=1, action) 
+| timechart span=5m count by action</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="charting.chart">line</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Top Blocked Devices by Name</title>
+      <chart>
+        <search>
+          <query>index=av sourcetype="symantec:ep:security:file" category="Device Manager*" 
+| rex field=Event_Description "Device Manager Message (?&lt;action&gt;\S+) the device\.\s+\[name\]:(?&lt;device_name&gt;[^\[]+)\[class\]:(?&lt;device_class&gt;[^\[]+)\[guid\]:(?&lt;device_guid&gt;[^\[]+)\[deviceID\]:(?&lt;device_id&gt;.*)" 
+| where action="Disabled"
+| top device_name
+| rename device_name as "Device Name", count as "Count"</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Top 25 Blocked Devices</title>
+      <table>
+        <search>
+          <query>index=av sourcetype="symantec:ep:security:file" category="Device Manager*" 
+| rex field=Event_Description "Device Manager Message (?&lt;action&gt;\S+) the device\.\s+\[name\]:(?&lt;device_name&gt;[^\[]+)\[class\]:(?&lt;device_class&gt;[^\[]+)\[guid\]:(?&lt;device_guid&gt;[^\[]+)\[deviceID\]:(?&lt;device_id&gt;.*)" 
+| where action="Disabled" 
+| top showperc=f 25 Host_Name, user, Domain_Name, Location, device_class, device_name, device_id, device_guid 
+| eval device_name=rtrim(device_name, " "),
+    device_class=rtrim(device_class, " "),
+    device_guid=rtrim(device_guid, " "),
+    device_id=rtrim(device_id, " ") 
+| rename Host_Name as "Server", user as "User", Domain_Name as "Domain", device_class as "Device Class", device_name as "Device Name", device_id as "Device ID", device_guid as "Device GUID", count as "Count"</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="count">25</option>
+        <option name="drilldown">none</option>
+        <format type="number" field="Count">
+          <option name="precision">0</option>
+        </format>
+      </table>
+    </panel>
+  </row>
+</form>

@@ -1,0 +1,12 @@
+index="crowdstrike" sourcetype="CrowdStrike:Event:Streams:JSON" eventtype="crowdstrike_detection_event" 
+| stats values(event.LocalIP) as ip,
+    values(event.MACAddress) as mac,
+    by dest 
+| fillnull value="" priority, lat, long, city, country, bunit, category, pci_domain, is_expected, should_timesync, should_update, requires_av, cim_entity_zone 
+| eval ip=mvjoin(ip, "|"),
+    mac=mvjoin(mac, "|"),
+    nt_host=mvjoin(upper(dest), "|"),
+    category="agent:crowdstrike" 
+| table ip, mac, nt_host, dns, owner, priority, lat, long, city, country, bunit, category, pci_domain, is_expected, should_timesync, should_update, requires_av, cim_entity_zone 
+| outputlookup org_crowdstrike_assets
+| stats count

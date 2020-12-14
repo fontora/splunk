@@ -1,0 +1,29 @@
+<form>
+  <label>Splunk Search Audit</label>
+  <fieldset submitButton="true" autoRun="true">
+    <input type="time" token="tok_time">
+      <label></label>
+      <default>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <table>
+        <search>
+          <query>index=_audit sourcetype=audittrail action=search info=completed user!="splunk-system-user"
+| eval search_et=strftime(search_et, "%F %T"), 
+    search_lt=strftime(search_lt, "%F %T") 
+| table _time, user, search, search_et, search_lt, total_run_time
+| rename user as "User", search as "Search", search_et as "Search Earliest Time", search_lt as "Search Latest Time", total_run_time as "Total Run Time (sec)"</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="count">25</option>
+        <option name="drilldown">none</option>
+      </table>
+    </panel>
+  </row>
+</form>

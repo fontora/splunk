@@ -1,0 +1,86 @@
+<dashboard>
+  <label>Overview</label>
+  <row>
+    <panel>
+      <title>Triggered Alerts</title>
+      <single>
+        <title>Click to see alerts</title>
+        <search>
+          <query>index="_audit" action="alert_fired" ss_app="splunk_monitoring_console"
+| stats count</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">all</option>
+        <option name="rangeColors">["0x53a051","0xf8be34","0xdc4e41"]</option>
+        <option name="rangeValues">[0,5]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="useColors">1</option>
+        <drilldown>
+          <link target="_self">/alerts/splunk_monitoring_console</link>
+        </drilldown>
+      </single>
+    </panel>
+    <panel>
+      <title>Forwarder Dial Home</title>
+      <single>
+        <title>Click to see stats</title>
+        <search>
+          <query>| inputlookup forwarders.csv 
+| stats count</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">all</option>
+        <option name="rangeColors">["0x53a051","0x0877a6","0xf8be34","0xf1813f","0xdc4e41"]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="useColors">0</option>
+        <drilldown>
+          <link target="_self">/app/search/forwarder_management/</link>
+        </drilldown>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Useful Links</title>
+      <html>
+        <div>
+          <ul>
+            <li>
+              <a href="/app/splunk_monitoring_console/monitoringconsole_landing">Monitoring Console: Summary</a>
+            </li>
+            <li>
+              <a href="/app/splunk_monitoring_console/monitoringconsole_check">Monitoring Console: Health Check</a>
+            </li>
+            <li>
+              <a href="/app/splunk_monitoring_console/resource_usage_deployment">Monitoring Console: Resource Usage</a>
+            </li>
+            <li>
+              <a href="/app/splunk_monitoring_console/data_quality">Monitoring Console: Data Quality</a>
+            </li>
+            <li>
+              <a href="/app/splunk_monitoring_console/indexer_clustering_status">Monitoring Console: Indexer Clustering</a>
+            </li>
+            <li>
+              <a href="/app/splunk_monitoring_console/indexing_performance_deployment">Monitoring Console: Indexing Performance</a>
+            </li>
+            <li>
+              <a href="/app/splunk_monitoring_console/indexes_and_volumes_deployment">Monitoring Console: Indexes and Volumes</a>
+            </li>
+            <li>
+              <a href="/app/splunk_monitoring_console/search_usage_statistics_deployment">Monitoring Console: Search Usage Statistics</a>
+            </li>
+            <li>
+              <a href="/app/splunk_monitoring_console/forwarder_deployment">Monitoring Console: Forwarder</a>
+            </li>
+            <li>
+              <a href="/app/splunk_monitoring_console/license_usage_30days">Monitoring Console: License Usage</a>
+            </li>
+          </ul>
+        </div>
+      </html>
+    </panel>
+  </row>
+</dashboard>

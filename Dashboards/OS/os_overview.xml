@@ -1,0 +1,101 @@
+<form>
+  <label>Operating Systems</label>
+  <description>Last 24 Hours</description>
+  <search id="basesearch">
+    <query>(index=os_win source=operatingsystem) OR (index=os_lin (sourcetype="Unix:Uptime" OR sourcetype="Unix:Version")) earliest=-24h@h latest=now
+| stats latest(OS) as win_os,
+    latest(os_name) as lin_os,
+    latest(Version) as win_ver, 
+    latest(os_release) as lin_ver, 
+    latest(Architecture) as win_arch,
+    latest(machine_architecture_name) as lin_arch, 
+    latest(LastBootUpTime) as win_uptime,
+    latest(SystemUpTime) as lin_uptime
+    by host
+    </query>
+  </search>
+  <fieldset submitButton="true" autoRun="true">
+    <input type="text" token="tok_host">
+      <label>Host</label>
+      <default>*</default>
+    </input>
+    <input type="dropdown" token="tok_os">
+      <label>Operating System</label>
+      <choice value="*">All</choice>
+      <default>*</default>
+      <fieldForLabel>os</fieldForLabel>
+      <fieldForValue>os</fieldForValue>
+      <search base="basesearch">
+        <query>| eval os=coalesce(win_os, lin_os)
+| stats values(os) as os
+| mvexpand os</query>
+      </search>
+    </input>
+    <input type="dropdown" token="tok_ver">
+      <label>Version</label>
+      <choice value="*">All</choice>
+      <default>*</default>
+      <fieldForLabel>ver</fieldForLabel>
+      <fieldForValue>ver</fieldForValue>
+      <search base="basesearch">
+        <query>| eval ver=coalesce(win_ver, lin_ver)
+| stats values(ver) as ver
+| mvexpand ver</query>
+      </search>
+    </input>
+    <input type="dropdown" token="tok_arch">
+      <label>CPU Arch.</label>
+      <choice value="*">All</choice>
+      <default>*</default>
+      <fieldForLabel>arch</fieldForLabel>
+      <fieldForValue>arch</fieldForValue>
+      <search base="basesearch">
+        <query>| eval arch=coalesce(win_arch, lin_arch)
+| stats values(arch) as arch
+| eval arch=if(arch=="x86_64","64-bit",arch)
+| mvexpand arch</query>
+      </search>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <title>Servers</title>
+      <table>
+        <search base="basesearch">
+          <query>| eval os=coalesce(win_os, lin_os),
+    ver=coalesce(win_ver, lin_ver),
+    arch=coalesce(win_arch, lin_arch),
+    arch=if(arch=="x86_64","64-bit",arch),
+    win_uptime=strptime(win_uptime, "%Y%m%d%H%M%S.%6N%Ez"), 
+    win_uptime=strftime(win_uptime, "%F %T") ,
+    lin_uptime=now()-lin_uptime,
+    lin_uptime=strftime(lin_uptime, "%F %T"),
+    uptime=coalesce(win_uptime, lin_uptime) 
+| fields host, os, ver, arch, uptime 
+| search host="$tok_host$" AND os="$tok_os$" AND ver="$tok_ver$" AND arch="$tok_arch$" AND ver="$tok_ver$" 
+| rename host as "Host", os as "Operating System", ver as "Version", arch as "CPU Arch.", uptime as "Last Boot"</query>
+        </search>
+        <option name="count">10</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+    <row>
+    <panel>
+      <title>Overview</title>
+      <chart>
+        <search base="basesearch">
+          <query>| eval os=coalesce(win_os, lin_os) 
+| stats count(os) by os</query>
+        </search>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">collapsed</option>
+        <option name="charting.chart">bar</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.legend.placement">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+</form>

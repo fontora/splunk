@@ -1,0 +1,49 @@
+<form>
+  <label>Time Sync</label>
+  <fieldset submitButton="true" autoRun="true">
+    <input type="text" token="tok_host">
+      <label>Server</label>
+      <default>*</default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <table>
+        <search>
+          <query>(index=os_lin sourcetype=time) OR (index=os_win sourcetype="Script:TimesyncStatus") host="$tok_host$"
+| rex field=_raw "\d{2}:\d{2}:\d{2}\s(?&lt;tz_lin&gt;\S+)(?:\n|.)*server\s(?&lt;ts_lin&gt;[^,]+),\sstratum\s(?&lt;stratum_lin&gt;\d+),\soffset\s(?&lt;offset_lin&gt;[^,]+),\sdelay\s(?&lt;delay_lin&gt;\S+)" 
+| rex field=ReferenceId "IP:\s+(?&lt;ts_win&gt;[^\)]+)" 
+| rex field=Stratum "^(?&lt;stratum_win&gt;\d+)" 
+| rex field=Time_zone "Bias:\s+(?&lt;tz_win0&gt;[\+\-0-9]+)" 
+| stats latest(offset_lin) as offset_lin, 
+    latest(stratum_lin) as stratum_lin,
+    latest(ts_lin) as ts_lin,
+    latest(delay_lin) as delay_lin,
+    latest(tz_lin) as tz_lin,
+    latest(Phase_Offset) as offset_win,
+    latest(stratum_win) as stratum_win,
+    latest(ts_win) as ts_win,
+    latest(Root_Delay) as delay_win,
+    latest(tz_win0) as tz_win0
+    by host 
+| eval offset_win=replace(offset_win, "s", ""),
+    delay_win=replace(delay_win, "s", ""),
+    tz_win1=replace(tz_win0, "-", "+"),
+    tz_win2=replace(tz_win0, "\+", "-"),
+    tz_lin=strftime(strptime("00:00:00 ".tz_lin, "%T %Z"), "%Ez") 
+| eval offset=coalesce(offset_lin, offset_win),
+    stratum=coalesce(stratum_lin, stratum_win),
+    ts=coalesce(ts_lin, ts_win),
+    delay=coalesce(delay_lin, delay_win),
+    tz=coalesce(tz_lin, tz_win1, tz_win2) 
+| table host, offset, stratum, ts, delay, tz
+| rename host as "Server", offset as "Offset", stratum as "Stratum", ts as "Time Source", delay as "Delay", tz as "Time Zone (minutes)"</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="count">25</option>
+        <option name="drilldown">none</option>
+      </table>
+    </panel>
+  </row>
+</form>

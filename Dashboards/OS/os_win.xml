@@ -1,0 +1,185 @@
+<form>
+  <label>Windows Server Lookup</label>
+  <fieldset submitButton="true" autoRun="false">
+    <input type="dropdown" token="tok_host">
+      <label>Server</label>
+      <fieldForLabel>host</fieldForLabel>
+      <fieldForValue>host</fieldForValue>
+      <search>
+        <query>| tstats values WHERE index=os_win BY host</query>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </search>
+    </input>
+    <input type="time" token="tok_time">
+      <label></label>
+      <default>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <title>Uptime</title>
+      <single>
+        <search>
+          <query>| mstats max(_value) as uptime WHERE metric_name="System.System_Up_Time" AND "index"="em_metrics" AND "host"="$tok_host$"
+| eval uptime=tostring(uptime, "duration")</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Version</title>
+      <single>
+        <search>
+          <query>index=os_win source=operatingsystem host="$tok_host$"
+| stats latest(version) as version</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Updates Available</title>
+      <single>
+        <search>
+          <query>index=os_win_sec sourcetype=WindowsUpdateLog host="$tok_host$" TERM(AGENT_DETECTION_FINISHED)
+| rex field=_raw "detected\s(?&lt;updates&gt;\d+)\supdates"
+| stats latest(updates) as updates</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="rangeColors">["0x53a051","0xf8be34","0xf1813f","0xdc4e41"]</option>
+        <option name="rangeValues">[5,15,30]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+    <panel>
+      <title>SAI Link</title>
+      <single>
+        <search>
+          <query>| makeresults 
+| eval title="Click Me!" 
+| fields title</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">all</option>
+        <option name="rangeColors">["0x53a051","0xdc4e41"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="useColors">1</option>
+        <drilldown>
+          <link target="_blank">/app/splunk_app_infrastructure/investigate?ed=host%252C$tok_host%7Cu$&amp;v=ENTITY&amp;vt=LIST_VIEW</link>
+        </drilldown>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>General Info</title>
+      <table>
+        <search>
+          <query>index=os_win sourcetype=WinHostMon source=processor host="$tok_host$" 
+| stats latest(cpu_count) as cpu_count 
+| eval title="Values" 
+| rename cpu_count as "# CPUs" 
+| transpose column_name="Type" header_field=title 
+| append 
+    [ search index=os_win sourcetype=WinHostMon source=operatingsystem host="$tok_host$" 
+    | stats latest(TotalPhysicalMemoryKB) as TotalPhysicalMemoryKB by TotalVirtualMemoryKB 
+    | eval TotalPhysicalMemoryKB=round(TotalPhysicalMemoryKB/1024/1024,2),
+        TotalVirtualMemoryKB=round(TotalVirtualMemoryKB/1024/1024,2) 
+    | eval title="Values" 
+    | rename TotalPhysicalMemoryKB as "RAM (GiB)", TotalVirtualMemoryKB as "Virtual Memory (GiB)" 
+    | transpose column_name="Type" header_field=title ] 
+| append 
+    [ search index=os_win sourcetype=WinHostMon source=disk DriveType=fixed Type=Disk host="$tok_host$" 
+    | stats latest(TotalSpaceKB) as TotalSpaceKB by mount, FileSystem 
+    | eval TotalSpaceKB=round(TotalSpaceKB/1024/1024,2),
+        hdd=mount." ".FileSystem." ".TotalSpaceKB." (GiB)" 
+    | fields hdd 
+    | mvcombine hdd 
+    | rename hdd as "HDDs" 
+    | eval title="Values" 
+    | transpose column_name="Type" header_field=title ] 
+| append 
+    [ search index=os_win_sec sourcetype=Script:NetworkConfiguration host="$tok_host$" 
+    | stats latest(host) as host by if, dhcp, ip, cidr, gw 
+    | fields host, if, dhcp, ip, cidr, gw 
+    | eval title="Values" 
+    | rename host as "Server", if as "Interface", dhcp as "DHCP", ip as "IP Address", cidr as "Subnet", gw as "Gateway" 
+    | transpose column_name="Type" header_field=title ]</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="count">10</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+    <panel>
+      <table>
+        <title>Latest Logons</title>
+        <search>
+          <query>index=os_win_sec host="$tok_host$" EventCode=4624 user!="*$" LogonType IN ("2", "10", "11") 
+| head 
+| stats latest(_time) as time by user
+| fields time, user
+| eval time=strftime(time, "%F %T")</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Installed Packages</title>
+      <table>
+        <search>
+          <query>index=os_win_sec sourcetype=Script:InstalledApps host="$tok_host$"
+| stats latest(_time) as time by DisplayName
+| fields DisplayName
+| eval DisplayName=trim(DisplayName, "\"")
+| rename DisplayName as "Package Name"</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="count">10</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+    <panel>
+      <title>Listening Ports</title>
+      <table>
+        <search>
+          <query>index=os_win_sec sourcetype=Script:ListeningPorts host="$tok_host$" NOT dest_port="1]"
+| stats latest(_time) as time by transport, dest_port
+| fields - time 
+| dedup dest_port
+| sort dest_port
+| rename transport as "Transport", dest_port as "Dest. Port", pid as "Process ID"</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="count">10</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+</form>

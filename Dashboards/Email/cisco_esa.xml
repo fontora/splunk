@@ -1,0 +1,162 @@
+<form>
+  <label>CISCO ESA</label>
+  <fieldset submitButton="true" autoRun="true">
+    <input type="time" token="tok_time">
+      <label></label>
+      <default>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <title>Emails over Time</title>
+      <chart>
+        <search>
+          <query>| tstats count WHERE index="email" sourcetype="cisco:esa:legacy" TERM(Message-ID) by _time span=5m
+| rename count as "Count"</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">collapsed</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.legend.placement">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>AV Verdict</title>
+      <chart>
+        <search>
+          <query>index="email" sourcetype="cisco:esa:legacy"
+| stats count by av_verdict
+| rename av_verdict as "AV Verdirect", count as "Count"</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Email Classifications</title>
+      <chart>
+        <search>
+          <query>index="email" sourcetype="cisco:esa:legacy"
+| top SEC
+| rename count as "Count"</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Message Size (KiB)</title>
+      <table>
+        <search>
+          <query>index="email" sourcetype="cisco:esa:legacy"
+| stats median(message_size) as median, min(message_size) as min, max(message_size) as max, p25(message_size) as lq, p75(message_size) as uq 
+| eval iqr=uq-lq 
+| eval title="Values"
+| rename median as "Median", min as "Minimum", max as "Maximum", lq as "Lower Quartile", uq as "Upper Quartile", iqr as "Interquartile Range"
+| transpose column_name="Stats" header_field=title</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="count">10</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <format type="number" field="Values (KiB)">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="Values (KiB)">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="Values">
+          <option name="precision">0</option>
+        </format>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <search>
+          <query>index="email" sourcetype="cisco:esa:legacy"
+| top sender
+| rename sender as "Sender", count as "Count", percent as "Percent"</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="count">10</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <format type="number" field="count">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="count">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="percent"></format>
+        <format type="number" field="Count">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="count">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="count">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="percent"></format>
+        <format type="number" field="Count">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="Percent"></format>
+      </table>
+    </panel>
+    <panel>
+      <table>
+        <search>
+          <query>index="email" sourcetype="cisco:esa:legacy"
+| top recipient
+| rename recipient as "Recipient", count as "Count", percent as "Percent"</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="count">10</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <format type="number" field="count">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="count">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="percent"></format>
+        <format type="number" field="Count">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="count">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="count">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="percent"></format>
+        <format type="number" field="Count">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="Percent"></format>
+      </table>
+    </panel>
+  </row>
+</form>

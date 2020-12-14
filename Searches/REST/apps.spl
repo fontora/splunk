@@ -1,0 +1,3 @@
+"| rest splunk_server=local /services/apps/local 
+| fields label, description, title disabled, update.version, version 
+| search NOT title IN (""100-*"", ""*-AccessProtection"", ""*-AuditAndDataProtection"", ""*-EndpointProtection"", ""*-IdentityManagement"", ""*-NetworkProtection"", ""*-ThreatIntelligence"", ""splunkclouduf"", ""tos"", ""cloud_administration"", ""dynamic-data-self-storage-app"", ""launcher"", ""learned"", ""legacy"", ""prometheus"", ""sample_app"", ""splunk_gdi"", ""splunk_httpinput"", ""splunk_instance_monitoring"", ""splunk_instrumentation"", ""splunk_internal_metrics"", ""splunk_metrics_workspace"") NOT version=""8.0.2004.1"""					

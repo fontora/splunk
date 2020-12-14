@@ -1,0 +1,19 @@
+index="_internal" sourcetype="splunkd" source="*metrics.log" component="Metrics" group="tcpin_connections" hostname!="*.abc.splunkcloud.com" 
+| stats first(os) as os,
+    first(arch) as arch,
+    first(connectionType) as connectionType,
+    first(fwdType) as fwdType 
+    by hostname 
+| fillnull value="" mac, owner, priority, lat, long, city, country, bunit, category, pci_domain, is_expected, should_timesync, should_update, requires_av, cim_entity_zone 
+| eval nt_host=upper(hostname),
+    category=case(
+      fwdType=="uf", "agent:splunk_uf",
+      fwdType=="lwf", "agent:splunk_lwf",
+      fwdType=="full", "agent:splunk_hf",
+      connectionType=="cooked" or connectionType=="cookedSSL", "agent:splunk_if",
+      connectionType=="raw" or connectionType=="rawSSL", "agent:slunk_legacy"),
+    category=mvjoin(mvappend(category, "os:".lower(os)), "|"),
+    priority=if(match(category, "splunk_hf|splunk_if"), "high", priority) 
+| table ip, mac, nt_host, dns, owner, priority, lat, long, city, country, bunit, category, pci_domain, is_expected, should_timesync, should_update, requires_av, cim_entity_zone 
+| outputlookup org_uf_assets
+| stats count

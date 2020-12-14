@@ -1,0 +1,113 @@
+<form>
+  <label>SEP - Network Security &amp; Firewall</label>
+  <fieldset submitButton="true" autoRun="true">
+    <input type="time" token="tok_time">
+      <label></label>
+      <default>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <title>Security: Events over Time</title>
+      <chart>
+        <search>
+          <query>index=av sourcetype="symantec:ep:security:file" category!="Device Manager*" 
+| timechart span=5m count by action</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="charting.chart">line</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Security: Top Blocked by Message</title>
+      <chart>
+        <search>
+          <query>index=av sourcetype="symantec:ep:security:file" category!="Device Manager*" action=blocked
+| rex field=Event_Description "(?&lt;message&gt;[^\.]+)\."
+| top message
+| rename message as "Message", count as "Count"</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Security: Top Blocked Events</title>
+      <table>
+        <search>
+          <query>index=av sourcetype="symantec:ep:security:file" category!="Device Manager*" action="blocked"
+| top showperc=f 25 Host_Name, user, Network_Protocol, Remote_Port, Event_Description, src 
+| rename Host_Name as "Server", user as "User", Network_Protocol as "Network Protocol", src as "Source", Remote_Port as "Remote Port", Event_Description as "Message", count as "Count"</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="count">25</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <format type="number" field="Count">
+          <option name="precision">0</option>
+        </format>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Firewall: Events over Time</title>
+      <chart>
+        <search>
+          <query>index=av sourcetype="symantec:ep:traffic:file" 
+| timechart span=5m count by action</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="charting.chart">line</option>
+        <option name="charting.drilldown">none</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Firewall: Top Blocked by Application</title>
+      <chart>
+        <search>
+          <query>index=av sourcetype="symantec:ep:traffic:file" action="blocked"
+| rex field=Application_Name ".*/(?&lt;application&gt;.*)"
+| top application</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Firewall: Top Blocked Events</title>
+      <table>
+        <search>
+          <query>index=av sourcetype="symantec:ep:traffic:file" action="blocked" 
+| top showperc=f user, src, dest, direction, Application_Name
+| rename user as "User", src as "Source", dest as "Destination", direction as "Direction", Application_Name as "Application", count as "Count"</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="count">10</option>
+        <option name="drilldown">none</option>
+        <format type="number" field="Count">
+          <option name="precision">0</option>
+        </format>
+      </table>
+    </panel>
+  </row>
+</form>

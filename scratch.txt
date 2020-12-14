@@ -1,0 +1,23 @@
+<input depends="$hidden$">
+
+https://github.com/splunk/TA-osquery
+
+Time picker restrict:
+https://community.splunk.com/t5/Archive/How-to-remove-some-extra-options-from-a-custom-time-picker/td-p/420011
+
+Hidden spacers: 
+https://community.splunk.com/t5/Dashboards-Visualizations/Inserting-whitespace-in-an-app-s-nav-menu/td-p/76462
+
+Input width:
+https://community.splunk.com/t5/Dashboards-Visualizations/How-to-use-CSS-to-increase-the-width-of-a-drop-down-input/td-p/232798/page/2
+https://community.splunk.com/t5/Dashboards-Visualizations/How-to-modify-the-width-to-350-pixels-for-the-drop-down-input-in/td-p/350481
+
+Outliers:
+https://community.splunk.com/t5/Archive/Finding-Outliers-on-event-counts/td-p/478720
+
+Emoji not working in darkmode
+
+exclude spunk archiver from bundle replication
+
+
+splunk btool check --debug

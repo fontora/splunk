@@ -1,0 +1,14 @@
+| rest splunk_server=local /services/data/models 
+| search eai:type=datamodels eai:acl.app="Splunk_SA_CIM" 
+| fields title, acceleration, acceleration.earliest_time 
+| eval acceleration=if(acceleration==0, "No", "Yes") 
+| append 
+    [| rest splunk_server=local /services/configs/conf-macros 
+    | search eai:acl.app="Splunk_SA_CIM" title="cim_*_indexes" 
+    | fields definition, updated, title 
+    | rex field=title "cim_(?<title>.*)_indexes" 
+    | rex field=definition "\((?<definition>[^\)]+)" 
+    | eval definition=replace(definition, "index=", ""),
+        definition=split(definition, " OR ") ] 
+| stats values(*) as * by title 
+| rename title as "Datamodel", acceleration as "Accelerated", acceleration.earliest_time as "Summary Range", definition as "Index Whitelist", updatead as "Last Updated"

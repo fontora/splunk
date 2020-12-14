@@ -1,0 +1,261 @@
+<form>
+  <label>Linux Server Lookup</label>
+  <fieldset submitButton="true" autoRun="false">
+    <input type="dropdown" token="tok_host" searchWhenChanged="false">
+      <label>Server</label>
+      <fieldForLabel>host</fieldForLabel>
+      <fieldForValue>host</fieldForValue>
+      <search>
+        <query>| tstats values WHERE index=os_lin BY host</query>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </search>
+    </input>
+    <input type="time" token="tok_time" searchWhenChanged="false">
+      <label></label>
+      <default>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <title>Uptime</title>
+      <single>
+        <search>
+          <query>index=os_lin sourcetype=Unix:Uptime host=$tok_host$
+| stats latest(SystemUpTime) as uptime
+| eval uptime=tostring(uptime, "duration")</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="rangeColors">["0x53a051","0x0877a6","0xf8be34","0xf1813f","0xdc4e41"]</option>
+        <option name="rangeValues">[4,30,70,100]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="useColors">0</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Kernel</title>
+      <single>
+        <search>
+          <query>index=os_lin sourcetype=Unix:Version host=$tok_host$ 
+| stats latest(os_release) as kernel</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Updates Available</title>
+      <single>
+        <search>
+          <query>index=os_lin_sec sourcetype=Unix:Update host=$tok_host$ package_type=*
+| stats latest(package) as package
+| stats count</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="rangeColors">["0x53a051","0xf8be34","0xf1813f","0xdc4e41"]</option>
+        <option name="rangeValues">[5,15,30]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <search>
+          <query>index=os_lin sourcetype=hardware host=$tok_host$ 
+| rex field=_raw "HARD_DRIVES\s+(?&lt;drives&gt;.*)" 
+| rex field=drives mode=sed "s/; /\n/g" 
+| rex field=drives mode=sed "s/;//g" 
+| eval mem=round(RealMemoryMB,0),
+    swap=round(SwapMemoryMB,0) 
+| stats latest(mem) as mem, latest(swap) as swap, latest(cpu_cores) as cpu_cores, latest(drives) as drives 
+| eval mem=round(mem/1024,2),
+    swap=round(swap/1024,2),
+    title="Values" 
+| rename mem as "RAM (GiB)", swap as "Swap (GiB)", cpu_cores as "# CPU", drives as "HDDs" 
+| transpose column_name="Type" header_field=title</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="count">10</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <format type="number" field="RAM">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="RAM">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="Swap">
+          <option name="precision">0</option>
+        </format>
+      </table>
+    </panel>
+    <panel>
+      <table>
+        <search>
+          <query>index=os_lin_sec sourcetype=Unix:Update host=$tok_host$ package_type=*
+| stats latest(package) as package
+| rename package as "Packages with Updates"</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="count">10</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Currently Logged On</title>
+      <table>
+        <search>
+          <query>index=os_lin_sec sourcetype=lastlog host=$tok_host$
+| stats latest(_raw) as lastlog
+| rename lastlog as "Last Log"</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="count">10</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+    <panel>
+      <title>Users with Priviledges</title>
+      <table>
+        <search>
+          <query>index=os_lin_sec sourcetype=usersWithLoginPrivs host=$tok_host$
+| stats latest(_time) as time by USERNAME, HOME_DIR, USER_INFO
+| fields - time
+| rename USERNAME as "User", HOME_DIR as "Home Directory", USER_INFO as "Comment"</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Installed Packages</title>
+      <table>
+        <search>
+          <query>index=os_lin_sec sourcetype=package host=$tok_host$ 
+| stats latest(VERSION) as ver,
+    latest(ARCH) as arch,
+    latest(RELEASE) as release,
+    latest(GROUP) as group, 
+    latest(VENDOR) as vendor
+    by NAME 
+| rename NAME as "Package", ver as "Version", arch as "Architecture", release as "Release", group as "Group", vendor as "Vendor"</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="count">10</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Connections by Protocol</title>
+      <chart>
+        <search>
+          <query>index=os_lin_sec sourcetype=netstat host=$tok_host$ 
+| stats latest(_raw) as _raw 
+| rex max_match=0 mode=sed "s/([\r\n]+)/##LF##/g" 
+| makemv _raw delim="##LF##" 
+| rename _raw as raw 
+| mvexpand raw 
+| rename raw as _raw
+| rex "^(?&lt;protocol&gt;\S+)\s+(?&lt;recv_q&gt;\d+)\s+(?&lt;send_q&gt;\d+)\s+(?&lt;local&gt;\S+)\s+(?&lt;foreign&gt;\S+)\s+(?&lt;state&gt;.*)"
+| fields - _raw
+| search local=*
+| top protocol</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Connections by State</title>
+      <chart>
+        <search>
+          <query>index=os_lin_sec sourcetype=netstat host=$tok_host$ 
+| stats latest(_raw) as _raw 
+| rex max_match=0 mode=sed "s/([\r\n]+)/##LF##/g" 
+| makemv _raw delim="##LF##" 
+| rename _raw as raw 
+| mvexpand raw 
+| rename raw as _raw
+| rex "^(?&lt;protocol&gt;\S+)\s+(?&lt;recv_q&gt;\d+)\s+(?&lt;send_q&gt;\d+)\s+(?&lt;local&gt;\S+)\s+(?&lt;foreign&gt;\S+)\s+(?&lt;state&gt;.*)"
+| fields - _raw
+| search local=*
+| top state</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Top Listneing Ports &lt; 32768</title>
+      <chart>
+        <search>
+          <query>index=os_lin_sec sourcetype=netstat host=$tok_host$ 
+| stats latest(_raw) as _raw 
+| rex max_match=0 mode=sed "s/([\r\n]+)/##LF##/g" 
+| makemv _raw delim="##LF##" 
+| rename _raw as raw 
+| mvexpand raw 
+| rename raw as _raw
+| rex "^(?&lt;protocol&gt;\S+)\s+(?&lt;recv_q&gt;\d+)\s+(?&lt;send_q&gt;\d+)\s+(?&lt;local&gt;\S+)\s+(?&lt;foreign&gt;\S+)\s+(?&lt;state&gt;.*)"
+| fields - _raw
+| search local=*
+| rex field=local ".*:(?&lt;port&gt;.*)"
+| where port&lt;32768
+| top port</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">collapsed</option>
+        <option name="charting.chart">column</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.legend.placement">none</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Netstat</title>
+      <table>
+        <search>
+          <query>index=os_lin_sec sourcetype=netstat host=$tok_host$
+| stats latest(_raw) as netstat</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+      </table>
+    </panel>
+  </row>
+</form>

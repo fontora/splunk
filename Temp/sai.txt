@@ -1,0 +1,183 @@
+
+#####################################
+Indexes:
+- em_meta
+- em_metrics 		(metric...)
+- infra_alerts
+
+# https://docs.splunk.com/Documentation/InfraApp/2.2.0/Admin/ManageAgents
+# https://docs.splunk.com/Documentation/InfraApp/2.2.0/Admin/SELinux
+
+yum install collectd
+setsebool -P collectd_tcp_network_connect 1
+vim /etc/collectd.conf
+# Setup logrotate for /var/log/collectd.conf
+
+#####################################
+
+#
+# Config file for collectd(1).
+# Please read collectd.conf(5) for a list of options.
+# http://collectd.org/
+#
+
+##############################################################################
+# Global #
+#----------------------------------------------------------------------------#
+# Global settings for the daemon. #
+##############################################################################
+
+Hostname "ip-123-26-32-192.ap-southeast-2.compute.internal"
+FQDNLookup false
+#BaseDir "/var/lib/collectd"
+#PIDFile "/var/run/collectd.pid"
+#PluginDir "/usr/lib64/collectd"
+#TypesDB "/usr/share/collectd/types.db"
+
+#----------------------------------------------------------------------------#
+# When enabled, plugins are loaded automatically with the default options #
+# when an appropriate <Plugin ...> block is encountered. #
+# Disabled by default. #
+#----------------------------------------------------------------------------#
+#AutoLoadPlugin false
+
+#----------------------------------------------------------------------------#
+# When enabled, internal statistics are collected, using "collectd" as the #
+# plugin name. #
+# Disabled by default. #
+#----------------------------------------------------------------------------#
+#CollectInternalStats false
+
+#----------------------------------------------------------------------------#
+# Interval at which to query values. This may be overwritten on a per-plugin #
+# base by using the 'Interval' option of the LoadPlugin block: #
+# <LoadPlugin foo> #
+# Interval 60 #
+# </LoadPlugin> #
+#----------------------------------------------------------------------------#
+Interval 60
+
+#MaxReadInterval 86400
+#Timeout 2
+#ReadThreads 5
+#WriteThreads 5
+
+# Limit the size of the write queue. Default is no limit. Setting up a limit is
+# recommended for servers handling a high volume of traffic.
+WriteQueueLimitHigh 1000000
+WriteQueueLimitLow 800000
+
+##############################################################################
+# Logging #
+#----------------------------------------------------------------------------#
+# Plugins which provide logging functions should be loaded first, so log #
+# messages generated when loading or configuring other plugins can be #
+# accessed. #
+##############################################################################
+
+LoadPlugin syslog
+LoadPlugin logfile
+
+<LoadPlugin "write_splunk">
+  FlushInterval 30
+</LoadPlugin>
+
+##############################################################################
+# LoadPlugin section #
+#----------------------------------------------------------------------------#
+# Lines beginning with a single `#' belong to plugins which have been built #
+# but are disabled by default. #
+# #
+# Lines beginning with `##' belong to plugins which have not been built due #
+# to missing dependencies or because they have been deactivated explicitly. #
+##############################################################################
+
+#LoadPlugin csv
+LoadPlugin cpu
+LoadPlugin uptime
+LoadPlugin memory
+LoadPlugin df
+LoadPlugin load
+LoadPlugin disk
+LoadPlugin interface
+#LoadPlugin docker
+LoadPlugin processmon
+
+##############################################################################
+# Plugin configuration #
+#----------------------------------------------------------------------------#
+# In this section configuration stubs for each plugin are provided. A desc- #
+# ription of those options is available in the collectd.conf(5) manual page. #
+##############################################################################
+
+<Plugin logfile>
+  LogLevel info
+  File "/var/log/collectd.log"
+  Timestamp true
+  PrintSeverity true
+</Plugin>
+
+<Plugin syslog>
+  LogLevel info
+</Plugin>
+
+<Plugin cpu>
+  ReportByCpu false
+  ReportByState true
+  ValuesPercentage true
+</Plugin>
+
+<Plugin memory>
+  ValuesAbsolute false
+  ValuesPercentage true
+</Plugin>
+
+<Plugin df>
+  FSType "ext2"
+  FSType "ext3"
+  FSType "ext4"
+  FSType "XFS"
+  FSType "rootfs"
+  FSType "overlay"
+  FSType "hfs"
+  FSType "apfs"
+  FSType "zfs"
+  FSType "ufs"
+  ReportByDevice true
+  ValuesAbsolute false
+  ValuesPercentage true
+  IgnoreSelected false
+</Plugin>
+
+<Plugin load>
+  ReportRelative true
+</Plugin>
+
+<Plugin disk>
+  Disk ""
+  IgnoreSelected true
+  UdevNameAttr "DEVNAME"
+</Plugin>
+
+<Plugin interface>
+  IgnoreSelected true
+</Plugin>
+
+<Plugin processmon>
+  ReadIo true
+  whitelist "collectd"
+  whitelist "bash"
+  blacklist "splunkd"
+</Plugin>
+
+<Plugin write_splunk>
+  server "123.26.32.192"
+  port "8088"
+  token "xxx-xxx-xxx-xxx"
+  ssl true
+  verifyssl false
+  Dimension "entity_type:nix_host"
+</Plugin>
+
+
+#####################################

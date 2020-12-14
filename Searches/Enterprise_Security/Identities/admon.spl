@@ -1,0 +1,112 @@
+index=msad sourcetype=ActiveDirectory objectCategory="CN=Person,CN=Schema,CN=Configuration,*" 
+| stats latest(accountExpires) as accountExpires,
+    latest(c) as work_country,
+    latest(compnay) as company,
+    latest(cn) as cn,
+    latest(department) as department,
+    latest(displayName) as displayName,
+    latest(distinguishedName) as distinguishedName,
+    latest(division) as division,
+    latest(employeeID) as employeeID, 
+    latest(employeeType) as employeeType, 
+    latest(givenName) as first,
+    latest(l) as l,
+    latest(lastLogonTimestamp) as lastLogonTimestamp,
+    latest(mail) as email,
+    latest(manager) as managedBy, 
+    latest(memberOf) as memberOf,
+    latest(mobile) as mobile, 
+    latest(name) as name,
+    latest(sAMAccountName) as sAMAccountName,
+    latest(sn) as last,
+    latest(st) as st,
+    latest(telephoneNumber) as telephoneNumber,
+    latest(title) as title,
+    latest(uid) as uid,
+    latest(uidNumber) as uidNumber,
+    latest(userAccountControl) as userAccountControl,
+    latest(userPrincipalName) as userPrincipalName,
+    latest(whenCreated) as startDate
+    by objectSid 
+| fillnull value="" identity, prefix, nick, first, last, suffix, email, phone, managedBy, priority, bunit, category, watchlist, startDate, endDate, work_city, work_country, work_lat, work_long, cim_entity_zone 
+| rex field=distinguishedName "DC=(?<domain_user>[^,]*)" 
+| rex field=distinguishedName "OU=(?<dn_parsed>[^,]+)" 
+| rex field=memberOf "CN=(?<member_parsed>[^,]+)" 
+| eval member_parsed=lower(replace(mvjoin(member_parsed, "|"), " ", "_")),
+    category="ad_ou:".lower(replace(mvjoin(dn_parsed, "|"), " ", "_")) 
+| eval identity=mvjoin(mvsort(mvdedup(mvappend(lower(sAMAccountName), lower(userPrincipalName), lower(cn), lower(email), objectSid, lower(name), "uid_".uidNumber,
+      if(isnotnull(employeeType) AND isnotnull(employeeID), employeeType."_".employeeID, ""), upper(domain_user + "" + sAMAccountName)))), "|"),
+    nick=userPrincipalName,
+    phone=mvjoin(mvappend(telephoneNumber, mobile), "|"),
+    priority=case(
+      match(category, "domain_admin|disabled|hold|executive") OR match(member_parsed, "domain_admins|enterprise_admins|schema_admins|administrators"), "critical", 
+      match(category, "contractor|service_account|external"), "high", 
+      match(category, "employees|training|user_accounts|users|administration"), "medium", 
+      1==1, "unknown"),    
+    bunit=company."/".division."/".department,
+    watchlist=if((userAccountControl % 4)>=2, "true", ""),
+    startDate=strftime(strptime(startDate, "%I:%M.%S %P, %a %m/%d/%Y"), "%m/%d/%Y %H:%M"),
+    endDate=case(accountExpires!="Never Expires", accountExpires, (userAccountControl % 4)>=2, lastLogonTimestamp),
+    endDate=if(endDate=="0", "", endDate),
+    endDate=if(endDate!="", strftime(strptime(endDate, "%I:%M.%S %P, %a %m/%d/%Y"), "%m/%d/%Y %H:%M"), ""),
+    work_city=if(l=="", null(), l).if(st=="", "", ", ".st) 
+| rex mode=sed field=phone "s#^\\||\\|$##"     
+| rex mode=sed field=bunit "s#^\\||\\|$##" 
+| table identity,prefix,nick,first,last,suffix,email,phone,managedBy,priority,bunit,category,watchlist,startDate,endDate,work_city,work_country,work_lat,work_long,cim_entity_zone
+index=msad sourcetype=ActiveDirectory objectCategory="CN=Person,CN=Schema,CN=Configuration,*" 
+| stats latest(accountExpires) as accountExpires,
+    latest(c) as work_country,
+    latest(compnay) as company,
+    latest(cn) as cn,
+    latest(department) as department,
+    latest(displayName) as displayName,
+    latest(distinguishedName) as distinguishedName,
+    latest(division) as division,
+    latest(employeeID) as employeeID, 
+    latest(employeeType) as employeeType, 
+    latest(givenName) as first,
+    latest(l) as l,
+    latest(lastLogonTimestamp) as lastLogonTimestamp,
+    latest(mail) as email,
+    latest(manager) as managedBy, 
+    latest(memberOf) as memberOf,
+    latest(mobile) as mobile, 
+    latest(name) as name,
+    latest(sAMAccountName) as sAMAccountName,
+    latest(sn) as last,
+    latest(st) as st,
+    latest(telephoneNumber) as telephoneNumber,
+    latest(title) as title,
+    latest(uid) as uid,
+    latest(uidNumber) as uidNumber,
+    latest(userAccountControl) as userAccountControl,
+    latest(userPrincipalName) as userPrincipalName,
+    latest(whenCreated) as startDate
+    by objectSid 
+| fillnull value="" identity, prefix, nick, first, last, suffix, email, phone, managedBy, priority, bunit, category, watchlist, startDate, endDate, work_city, work_country, work_lat, work_long, cim_entity_zone 
+| rex field=distinguishedName "DC=(?<domain_user>[^,]*)" 
+| rex field=distinguishedName "OU=(?<dn_parsed>[^,]+)" 
+| rex field=memberOf "CN=(?<member_parsed>[^,]+)" 
+| eval member_parsed=lower(replace(mvjoin(member_parsed, "|"), " ", "_")),
+    category="ad_ou:".lower(replace(mvjoin(dn_parsed, "|"), " ", "_")) 
+| eval identity=mvjoin(mvsort(mvdedup(mvappend(lower(sAMAccountName), lower(userPrincipalName), lower(cn), lower(email), objectSid, lower(name), "uid_".uidNumber,
+      if(isnotnull(employeeType) AND isnotnull(employeeID), employeeType."_".employeeID, ""), upper(domain_user + "" + sAMAccountName)))), "|"),
+    nick=userPrincipalName,
+    phone=mvjoin(mvappend(telephoneNumber, mobile), "|"),
+    priority=case(
+      match(category, "domain_admin|disabled|hold|executive") OR match(member_parsed, "domain_admins|enterprise_admins|schema_admins|administrators"), "critical", 
+      match(category, "contractor|service_account|external"), "high", 
+      match(category, "employees|training|user_accounts|users|administration"), "medium", 
+      1==1, "unknown"),    
+    bunit=company."/".division."/".department,
+    watchlist=if((userAccountControl % 4)>=2, "true", ""),
+    startDate=strftime(strptime(startDate, "%I:%M.%S %P, %a %m/%d/%Y"), "%m/%d/%Y %H:%M"),
+    endDate=case(accountExpires!="Never Expires", accountExpires, (userAccountControl % 4)>=2, lastLogonTimestamp),
+    endDate=if(endDate=="0", "", endDate),
+    endDate=if(endDate!="", strftime(strptime(endDate, "%I:%M.%S %P, %a %m/%d/%Y"), "%m/%d/%Y %H:%M"), ""),
+    work_city=if(l=="", null(), l).if(st=="", "", ", ".st) 
+| rex mode=sed field=phone "s#^\\||\\|$##"     
+| rex mode=sed field=bunit "s#^\\||\\|$##" 
+| table identity, prefix, nick, first, last, suffix, email, phone, managedBy, priority, bunit, category, watchlist, startDate, endDate, work_city, work_country, work_lat, work_long, cim_entity_zone
+| outputlookup org_admon_identities
+| stats count

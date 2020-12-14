@@ -1,0 +1,44 @@
+index="ldapsearch" sourcetype="ldap:user" userAccountControl{}="NORMAL_ACCOUNT" 
+| fillnull value="" c, givenName, l, mail, manager, mobile, telephoneNumber, sn, st, title 
+| stats values(accountExpires) as endDate,
+    values(c) as work_country,
+    values(displayName) as displayName,
+    values(distinguishedName) as distinguishedName,
+    values(givenName) as first,
+    values(l) as l,
+    values(mail) as email,
+    values(manager) as managedBy,
+    values(memberOf{}) as memberOf,
+    values(mobile) as mobile,
+    values(sAMAccountName) as sAMAccountName,
+    values(sn) as last,
+    values(st) as st,
+    values(telephoneNumber) as telephoneNumber,
+    values(title) as title,
+    values(userAccountControl{}) as userAccountControl,
+    values(userPrincipalName) as nick,
+    values(whenCreated) as startDate,
+    by objectSid 
+| fillnull value="" prefix, bunit, category, work_lat, work_long, cim_entity_zone 
+| rex field=memberOf "CN=(?<member_parsed>[^,]+)" 
+| rex field=distinguishedName "OU=(?<dn_parsed>[^,]+)" 
+| eval member_parsed=lower(replace(mvjoin(member_parsed, "|"), " ", "_")),
+    category="ad_ou:".lower(replace(mvjoin(dn_parsed, "|"), " ", "_")) 
+| eval identity=mvjoin(mvappend(lower(sAMAccountName), objectSid, lower(userPrincipalName), displayName, lower(email)), "|"),
+    phone=mvjoin(mvappend(telephoneNumber, mobile), "|"),
+    priority=case(
+      match(category, "domain_admin|disabled|hold|executive") OR match(member_parsed, "domain_admins|enterprise_admins|schema_admins|administrators"), "critical", 
+      match(category, "contractor|service_account|external"), "high", 
+      match(category, "employees|training|user_accounts|users|administration"), "medium", 
+      1==1, "unknown"),
+    watchlist=case(
+      match(category, "disabled|hold"), "true",
+      match(userAccountControl, "ACCOUNTDISABLE"), "true",
+      1==1, "false"),
+    endDate=if(endDate=="(never)", "", strftime(strptime(endDate, "%Y-%m-%dT%H:%M:%S%Z"), "%m/%d/%y %H:%M")),
+    startDate=strftime(strptime(startDate, "%Y-%m-%d %H:%M:%S%z"), "%m/%d/%y %H:%M"), 
+    work_city=if(l=="", null(), l).if(st=="", "", ", ".st) 
+| rex mode=sed field=phone "s#^\\||\\|$##" 
+| table identity, prefix, nick, first, last, suffix, email, phone, managedBy, priority, bunit, category, watchlist, startDate, endDate, work_city, work_country, work_lat, work_long, cim_entity_zone
+| outputlookup create_empty=false org_ad_identities
+| stats count

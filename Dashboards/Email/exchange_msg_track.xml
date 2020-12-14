@@ -1,0 +1,64 @@
+<form>
+  <label>Track a Message</label>
+  <fieldset autoRun="true" submitButton="true">
+    <input token="tok_sender" type="text">
+      <label>Sender / From</label>
+      <prefix>sender="</prefix>
+      <suffix>"</suffix>
+      <default>*</default>
+    </input>
+    <input token="tok_recipient" type="text">
+      <label>Recipient / To</label>
+      <prefix>recipient="</prefix>
+      <suffix>"</suffix>
+      <default>*</default>
+    </input>
+    <input token="tok_subject" type="text">
+      <label>Message Subject</label>
+      <prefix>message_subject="</prefix>
+      <suffix>"</suffix>
+      <default>*</default>
+    </input>
+    <input token="tok_time" type="time">
+      <default>Last 15 minutes</default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <table>
+        <title>Matching Messages</title>
+        <search>
+          <query>index=exchange sourcetype="MSExchange:*:MessageTracking" ($tok_sender$ OR $tok_recipient$ OR $tok_subject$) 
+| transaction message_id keepevicted=t maxspan=15m 
+| search $tok_sender$ $tok_recipient$ $tok_subject$ 
+| eval dt=strftime(_time,"%c") 
+| eval total_bytes=mvindex(total_bytes,-1) 
+| stats values(dt) as "Date/Time",values(sender) as "Sender",values(recipient) as "Recipients",values(message_subject) as "Subject",max(total_bytes) as "Size" by message_id</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="count">20</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">true</option>
+      </table>
+    </panel>
+  </row>
+  
+    <row>
+    <panel>
+      <title>Exchange Messages</title>
+      <table>
+        <search>
+          <query>index=exchange sourcetype="MSExchange:*:MessageTracking" event_id IN ("BADMAIL", "FAIL", "RECEIVE", "SEND")
+| table _time, host, directionality, event_id, message_size, message_subject, recipient, recipient_status sender, return_path</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="count">10</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+  
+</form>
