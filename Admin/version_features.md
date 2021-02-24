@@ -17,7 +17,7 @@
 | 7.2 | workload management |
 | 7.2 | SmartStore |
 | 7.2 | Ingest logs as metrics |
-| 7.2 |Ingest-time eval-style extractions |
+| 7.2 | Ingest-time eval-style extractions |
 | 7.2 | Docker support |
 | 7.2 | Dashboard dark theme |
 | 7.2 | Customizable admin user name |
@@ -56,11 +56,23 @@
 
 ## Removed
 
-TBA
+| Removed Version | Deprecated Version | Description |
+| --- | --- |
+| 8.0 | 6.4 | Splunk Web legacy mode |
+| 8.0 | 6.3 | Advanced XML |
+| 8.0 | 6.2 | Search Head pooling |
+
+## Deprecated
+
+| Version | Description |
+| --- | --- |
+| -   | Python 2.7 (it's [complicated](https://docs.splunk.com/Documentation/Splunk/latest/Python3Migration)) |
+| 6.0 | Light Forwarder: `SplunkLightForwarder` |
+| 5.0 | File system change monitor: `fschange` |
 
 ## Versions of Interest
 
 | Version | Description |
 | --- | --- |
-| 7.2.2  | systemd default |
+| 7.2.2  | systemd temporarily made default on enable-boot |
 | 7.1.10 | datetime.xml issue |
