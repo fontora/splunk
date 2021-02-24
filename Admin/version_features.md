@@ -2,16 +2,65 @@
 
 ## Added
 
-| README | Description |
-| --- | --- |
-| [backup.md](backup.md) | Simple backup script |
-| [operating_systems.md](operating_systems.md) | Lists major OS versions and their support duration |
-| [version_support.md](version_support.md) | Lists Splunk versions and their support duration |
-
 | Version | Description |
 | --- | --- |
-| 8.1 | SPL comments: ```this is a comment``` \ <100 GB license enforcement |
+| 8.1 | SPL comments: \`\`\`this is a comment\`\`\` |
+| 8.1 | &gt;100 GB license enforcement |
+| 8.0 | Python 3.7 support |
+| 8.0 | Analytics Workspace |
+| 8.0 | Shared data model acceleration summaries |
+| 8.0.5 | New command: `require` |
+| 8.0 | PREFIX added to tstats |
+| 7.4 | Metrics rollups |
+| 7.3 | Splunk Metrics Workspace in splunk |
+| 7.3 | New command: `walklex` |
+| 7.2 | workload management |
+| 7.2 | SmartStore |
+| 7.2 | Ingest logs as metrics |
+| 7.2 |Ingest-time eval-style extractions |
+| 7.2 | Docker support |
+| 7.2 | Dashboard dark theme |
+| 7.2 | Customizable admin user name |
+| 7.1 | Splunk Web user interface update |
+| 7.1 | Upgrades to internal Splunk password capabilities (admin user must have non default password) |
+| 7.1 | Parallel reduce search processing (new command: `redistribute`) |
+| 7.1 | New commands: `mcollect`, `meventcollect` |
+| 7.1 | Diag UI |
+| 7.1 | KV store live backup and restore |
+| 7.1 | Splunk Cloud DDSS |
+| 7.0 | Metrics |
+| 7.0 | Event annotations |
+| 6.6 | New command: `union` |
+| 6.6 | New SQL-like IN SPL operator |
+| 6.6 | Trellis layout |
+| 6.6 | Search Head Clustering user interface |
+| 6.6 | Volume-based data forwarding |
+| 6.6 | Change in default time range for Search (24h from all of time) |
+| 6.5 | Datsets |
+| 6.5 | Search syntax highlight, auto formatting and command completion |
+| 6.5 | Edit XML inline and preview |
+| 6.5 | Machine Learning Tool Kit |
+| 6.5 | Hadoop Dataroll |
+| 6.5 | Health Checks |
+| 6.5 | Data rebalancing |
+| 6.5 | UF: EVENT_BRKEAER |
+| 6.4 | Data sampling |
+| 6.4 | TSIDX reduction |
+| 6.4 | Authentication: SAML, Okta, Azure, ADFS |
+| 6.3 | Index and search improvements ~2x |
+| 6.3 | Monitoring Console |
+| 6.3 | Data Integrity |
+| 6.3 | HTTP Event Collector |
+| 6.2 | GDI UI |
+| 6.2 | UI field extractor |
 
 ## Removed
 
 TBA
+
+## Versions of Interest
+
+| Version | Description |
+| --- | --- |
+| 7.2.2  | systemd default |
+| 7.1.10 | datetime.xml issue |
