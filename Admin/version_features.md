@@ -57,7 +57,7 @@
 ## Removed
 
 | Removed Version | Deprecated Version | Description |
-| --- | --- |
+| --- | --- | --- |
 | 8.0 | 6.4 | Splunk Web legacy mode |
 | 8.0 | 6.3 | Advanced XML |
 | 8.0 | 6.2 | Search Head pooling |
