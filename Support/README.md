@@ -12,7 +12,7 @@
 | 7.0 | 2017.09.26 | 2020.01.31 | 24 Months |
 | 6.6 | 2017.05.02 | 2020.01.31 | Splunk Enterprise 8.0 Release |
 | 6.5 | 2016.09.27 | 2019.10.22 | Splunk Enterprise 8.0 Release |
-| 6.4 | 2016.04.05 | 2019.10.22 | Splunk Enterprise 8.0 Release | 
+| 6.4 | 2016.04.05 | 2019.10.22 | Splunk Enterprise 8.0 Release |
 | 6.3 | 2015.09.22 | 2019.10.22 | Splunk Enterprise 8.0 Release |
 | 6.2 | 2014.10.07 | 2019.10.22 | Splunk Enterprise 8.0 Release |
 | 6.1 | 2014.05.06 | 2019.10.22 | Splunk Enterprise 8.0 Release |
