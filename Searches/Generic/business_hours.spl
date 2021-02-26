@@ -1,0 +1,3 @@
+| eval hour=tonumber(strftime(_time,"%H")), 
+    dow=tonumber(strftime(_time,"%w")) 
+| where (dow!=0 AND dow!=6) AND (hour<=6 OR hour>=18)

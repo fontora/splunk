@@ -2,15 +2,16 @@
 
 ## Added
 
+- https://docs.splunk.com/Documentation/Splunk/latest/ReleaseNotes/
+
 | Version | Description |
 | --- | --- |
 | 8.1 | SPL comments: \`\`\`this is a comment\`\`\` |
-| 8.1 | &gt;100 GB license enforcement |
 | 8.0 | Python 3.7 support |
 | 8.0 | Analytics Workspace |
 | 8.0 | Shared data model acceleration summaries |
 | 8.0.5 | New command: `require` |
-| 8.0 | PREFIX added to tstats |
+| 8.0 | New command option: `PREFIX` added to tstats |
 | 7.4 | Metrics rollups |
 | 7.3 | Splunk Metrics Workspace in splunk |
 | 7.3 | New command: `walklex` |
@@ -74,5 +75,11 @@
 
 | Version | Description |
 | --- | --- |
+| 8.1    | &gt;100 GB license enforcement |
 | 7.2.2  | systemd temporarily made default on enable-boot |
 | 7.1.10 | datetime.xml issue |
+| 6.5    | No enforcement licenses available |
+
+## Operating Systems
+
+TBA
