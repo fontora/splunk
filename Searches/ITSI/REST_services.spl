@@ -1,0 +1,1 @@
+| rest splunk_server=local /servicesNS/nobody/SA-ITOA/itoa_interface/service fields="title,_key,enabled" report_as=text
