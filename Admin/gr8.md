@@ -2,7 +2,7 @@
 
 ## HF or IDX
 
-```bash
+```dosini
 props.conf
 [your_sourcetype]
 TIME_PREFIX             = \<regex\>
@@ -15,7 +15,7 @@ TRUNCATE                = 10000
 
 Optional
 
-```bash
+```dosini
 TZ             = UTC
 ANNOTATE_PUNCT = false
 KV_MODE        = false
@@ -23,7 +23,7 @@ KV_MODE        = false
 
 ## UF
 
-```bash
+```dosini
 EVENT_BREAKER_ENABLE = true
 EVENT_BREAKER        = \<regex\>
 ```

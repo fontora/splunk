@@ -1,0 +1,19 @@
+| rest splunk_server=local "/servicesNS/-/-/saved/searches/" search="is_scheduled=1" search="disabled=0" 
+| fields title, cron_schedule, eai:acl.app
+| rename title as savedsearch_name 
+| eval pieces=split(cron_schedule, " ") 
+| eval c_min=mvindex(pieces, 0), c_h=mvindex(pieces, 1), c_d=mvindex(pieces, 2), c_mday=mvindex(pieces, 3), c_wday=mvindex(pieces, 4) 
+| eval c_min_div=if(match(c_min, "/"), replace(c_min, "^.*/(\d+)$", "\1"), null()) 
+| eval c_mins=if(match(c_min, ","), split(c_min, ","), null()) 
+| eval c_min_div=if(isnotnull(c_mins), abs(tonumber(mvindex(c_mins, 1)) - tonumber(mvindex(c_mins, 0))), c_min_div) 
+| eval c_hs=if(match(c_h, ","), split(c_h, ","), null()) 
+| eval c_h_div=case(match(c_h, "/"), replace(c_h, "^.*/(\d+)$", "\1"), isnotnull(c_hs), abs(tonumber(mvindex(c_hs, 1)) - tonumber(mvindex(c_hs, 0))), 1=1, null()) 
+| eval c_wdays=if(match(c_wday, ","), split(c_wday, ","), null()) 
+| eval c_wday_div=case(match(c_wday, "/"), replace(c_wday, "^.*/(\d+)$", "\1"), isnotnull(c_wdays), abs(tonumber(mvindex(c_wdays, 1)) - tonumber(mvindex(c_wdays, 0))), 1=1, null()) 
+| eval i_m=case(c_d < 29, 86400 * 28, c_d = 31, 86400 * 31, 1=1, null()) 
+| eval i_h=case(isnotnull(c_h_div), c_h_div * 3600, c_h = "*", null(), match(c_h, "^\d+$"), 86400) 
+| eval i_min=case(isnotnull(c_min_div), c_min_div * 60, c_min = "*", 60, match(c_min, "^\d+$"), 3600) 
+| eval i_wk=case(isnotnull(c_wday_div), c_wday_div * 86400, c_wday = "*", null(), match(c_wday, "^\d+$"), 604800) 
+| eval cron_minimum_freq=case(isnotnull(i_m), i_m, isnotnull(i_wk) AND isnotnull(c_min_div), i_min, isnotnull(i_wk) AND isnull(c_min_div), i_wk, isnotnull(i_h), i_h, 1=1, min(i_min)) 
+| fields - c_d c_h c_hs c_h_div c_mday c_min c_min_div c_mins c_wday c_wdays c_wday_div pieces i_m i_min i_h i_wk 
+| fields savedsearch_name cron_minimum_freq cron_schedule eai:acl.app

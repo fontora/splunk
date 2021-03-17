@@ -7,11 +7,12 @@
 | Version | Description |
 | --- | --- |
 | 8.1 | SPL comments: \`\`\`this is a comment\`\`\` |
+| 8.0.5 | New command: `require` |
 | 8.0 | Python 3.7 support |
 | 8.0 | Analytics Workspace |
 | 8.0 | Shared data model acceleration summaries |
-| 8.0.5 | New command: `require` |
 | 8.0 | New command option: `PREFIX` added to tstats |
+| 8.0 | Cascading knowledge bundle replication
 | 7.4 | Metrics rollups |
 | 7.3 | Splunk Metrics Workspace in splunk |
 | 7.3 | New command: `walklex` |
@@ -48,6 +49,7 @@
 | 6.4 | Data sampling |
 | 6.4 | TSIDX reduction |
 | 6.4 | Authentication: SAML, Okta, Azure, ADFS |
+| 6.3 | Multiple pipelines
 | 6.3 | Index and search improvements ~2x |
 | 6.3 | Monitoring Console |
 | 6.3 | Data Integrity |
