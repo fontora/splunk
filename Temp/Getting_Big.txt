@@ -60,3 +60,37 @@ https://conf.splunk.com/files/2019/slides/SEC1554.pdf
 
 TSTATS and PREFIX
 https://conf.splunk.com/files/2020/slides/PLA1089C.pdf
+
+
+pstacks(eu-stack
+
+New KV store
+
+ubuntu 18?
+
+22nd feb
+We've done a bit of housekeeping on our end and we've been changing the
+cron schedule on some aggressive scheduled searches.
+Any of the searches set to a 1 minute cron have been changed to a 30 minute
+schedule. We're continuing to look at some of the expensive queries too in
+order to work out how we can better optimise them.
+
+There has been ongoing battle on indexing queue busy issue on their indexer layer in which I believe they have implemented WLM(Workload Management) in a way that searches are not hogging all available CPUs on the indexer layer. @Jeremy Chen worked on this issue previously.
+This is also one of the reasons why they have throttled down search capacity(scheduled searches + adhoc searches) in half of their full search capacity on purpose.  And I remember on a Zoom session that they mentioned they can increase their indexer's capacity if necessary.    If the issue is not from Splunk scheduler's issue, it's high time for them to consider scaling up vertically or horizontally instead of throttling down search capacity.
+
+### MIGRATION SEARCHES ###
+
+index=customer_splunkd Cachemanager TERM("action=upload") sourcetype=splunkd TERM("status=succeeded") kb>1000 stack=<my-stack> host=idx-i-*.<my-stack>.splunkcloud.com
+| eval speed_kbs=round(kb/elapsed_ms*1000,0) 
+| rex field=cache_id "(?<b_type>[\w]+?)\|(?<idx>[\w\-_]+?)~" 
+|  table _time host kb elapsed_ms speed_kbs cache_id idx b_type
+
+| timechart avg(speed_kbs)  by host” or sum(kb), sum(elapsed_ms) and do a timechart with span=1s to see parallel uploads
+
+
+
+tsidxwritinglevel  journal-compression  journal-size  tsidx size
+      1                     gzip            156MB       258MB
+      2                     gzip            156MB       217MB
+      3                     zstd            149MB       222MB!!!!!!!
+      3                     lz4             237MB       221MB!!!!!!!

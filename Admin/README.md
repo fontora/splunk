@@ -3,6 +3,7 @@
 | File | Description |
 | ---- | ----------- |
 | [backup.sh](backup.sh) | Simple backup script |
+| [codenames.md](codenames.md) | Codenames for Splunk versions
 | [cron.spl](cron.spl) | Find frequently running saved searches, thanks Nico! |
 | [gr8.md](gr8.md) | Great Eight (gr8) settings |
 | [operating_systems.md](operating_systems.md) | Lists major OS versions and their support duration |

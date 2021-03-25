@@ -12,7 +12,7 @@
 | 8.0 | Analytics Workspace |
 | 8.0 | Shared data model acceleration summaries |
 | 8.0 | New command option: `PREFIX` added to tstats |
-| 8.0 | Cascading knowledge bundle replication
+| 8.0 | Cascading knowledge bundle replication |
 | 7.4 | Metrics rollups |
 | 7.3 | Splunk Metrics Workspace in splunk |
 | 7.3 | New command: `walklex` |
