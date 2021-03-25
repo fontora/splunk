@@ -94,3 +94,7 @@ tsidxwritinglevel  journal-compression  journal-size  tsidx size
       2                     gzip            156MB       217MB
       3                     zstd            149MB       222MB!!!!!!!
       3                     lz4             237MB       221MB!!!!!!!
+
+aaa_json1: Level1, GZIP, journal.gz =76.002.583, TSIDX=104.375.704
+aaa_json5: Level3, ZSTD, journal.zst=74.608.439, TSIDX= 86.932.905      15% saving
+aaa_json7: Level4, ZSTD, journal.zst=74.608.485, TSIDX= 60.839.147      40% saving
