@@ -100,7 +100,6 @@ aaa_json5: Level3, ZSTD, journal.zst=74.608.439, TSIDX= 86.932.905      15% savi
 aaa_json7: Level4, ZSTD, journal.zst=74.608.485, TSIDX= 60.839.147      40% saving
 
 
-<<<<<<< HEAD
 ######################
 
 
@@ -142,7 +141,6 @@ Change algorithm ~5 months ago.
 James: How do we protect the indexing service during changes
 
 50 - 70 indexers, 20 new ones
-=======
 In server.conf [clustering] on Indexer:
 [clustering]
 cxn_timeout = 600
@@ -195,4 +193,3 @@ cost per ingestion
 | rest /services/data/indexes 
 index=_internal
 index=_introspection
->>>>>>> 8167eddbcc6df29c09a6ac46cbc6c4c21a4a2805
