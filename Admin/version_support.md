@@ -3,7 +3,7 @@
 - https://www.splunk.com/en_us/legal/splunk-software-support-policy.html
 
 | Version | Released | End of Support | Criteria |
-| --- | --- | --- | --- |
+| ------- | -------- | -------------- | -------- |
 | 8.1 | 2020.10.19 | 2022.10.19 | 24 Months |
 | 8.0 | 2019.10.22 | 2021.10.22 | 24 Months |
 | 7.3 | 2019.06.04 | 2021.06.04 | 24 Months |
