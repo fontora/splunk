@@ -98,3 +98,46 @@ tsidxwritinglevel  journal-compression  journal-size  tsidx size
 aaa_json1: Level1, GZIP, journal.gz =76.002.583, TSIDX=104.375.704
 aaa_json5: Level3, ZSTD, journal.zst=74.608.439, TSIDX= 86.932.905      15% saving
 aaa_json7: Level4, ZSTD, journal.zst=74.608.485, TSIDX= 60.839.147      40% saving
+
+
+######################
+
+
+lru		vs		lruk 
+
+lruk combines with frequency of access... so a blended approach.
+- suggested
+
+hot data
+- 7 days?
+
+
+search role, how far back in time you can search
+==> protection to stop people pulling back EVERYTHING from s3
+
+
+######################
+
+Health Check            40 credits, 4 days
+- WLM
+- Indexing pipeline review
+- SHC review
+- Search profile
+- CPU profiling         pstacks, get support to help do cpu profiling
+
+CHAT WITH CHANDRA 
+ 
+=====> 
+
+##### Chat about the move to tsidx3 and 750mb buckets
+
+Avalon, Bondi, Coogee, Deewhy (Jira)
+
+stream processing... 1m batches, or 2m
+
+
+Change algorithm ~5 months ago.
+
+James: How do we protect the indexing service during changes
+
+50 - 70 indexers, 20 new ones
