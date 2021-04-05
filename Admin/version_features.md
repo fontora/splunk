@@ -5,7 +5,7 @@
 - https://docs.splunk.com/Documentation/Splunk/latest/ReleaseNotes/
 
 | Version | Description |
-| --- | --- |
+| ------- | ----------- |
 | 8.1 | SPL comments: \`\`\`this is a comment\`\`\` |
 | 8.0.5 | New command: `require` |
 | 8.0 | Python 3.7 support |
@@ -54,13 +54,12 @@
 | 6.3 | Monitoring Console |
 | 6.3 | Data Integrity |
 | 6.3 | HTTP Event Collector |
-| 6.2 | GDI UI |
 | 6.2 | UI field extractor |
 
 ## Removed
 
 | Removed Version | Deprecated Version | Description |
-| --- | --- | --- |
+| --------------- | ------------------ | ----------- |
 | 8.0 | 6.4 | Splunk Web legacy mode |
 | 8.0 | 6.3 | Advanced XML |
 | 8.0 | 6.2 | Search Head pooling |
@@ -68,7 +67,7 @@
 ## Deprecated
 
 | Version | Description |
-| --- | --- |
+| ------- | ----------- |
 | -   | Python 2.7 (it's [complicated](https://docs.splunk.com/Documentation/Splunk/latest/Python3Migration)) |
 | 6.0 | Light Forwarder: `SplunkLightForwarder` |
 | 5.0 | File system change monitor: `fschange` |
@@ -76,7 +75,7 @@
 ## Versions of Interest
 
 | Version | Description |
-| --- | --- |
+| ------- | ----------- |
 | 8.1    | &gt;100 GB license enforcement |
 | 7.2.2  | systemd temporarily made default on enable-boot |
 | 7.1.10 | datetime.xml issue |

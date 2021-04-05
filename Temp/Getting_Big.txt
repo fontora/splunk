@@ -98,3 +98,57 @@ tsidxwritinglevel  journal-compression  journal-size  tsidx size
 aaa_json1: Level1, GZIP, journal.gz =76.002.583, TSIDX=104.375.704
 aaa_json5: Level3, ZSTD, journal.zst=74.608.439, TSIDX= 86.932.905      15% saving
 aaa_json7: Level4, ZSTD, journal.zst=74.608.485, TSIDX= 60.839.147      40% saving
+
+
+In server.conf [clustering] on Indexer:
+[clustering]
+cxn_timeout = 600
+send_timeout = 600
+rcv_timeout = 600
+heartbeat_period = 10
+#In server.conf [clustering] on Cluster Master:
+[clustering]
+executor_workers = 16
+heartbeat_timeout = 600
+cxn_timeout=600
+send_timeout=600
+rcv_timeout=600
+max_peer_build_load= 5
+max_fixup_time_ms = 5000
+max_peers_to_download_bundle = 5
+#Indexer Side (ALL INDEXERS AND CLUSTER MASTER)
+In server.conf
+[httpServer]
+busyKeepAliveIdleTimeout = 180
+streamInWriteTimeout = 30
+
+
+
+WLM (index=*? you go to sin-bin and run in 1% of total CPU available)
+
+
+
+look for symptoms
+-- indexer health ===> good starting block
+
+1% top 80-90%
+ 
+ pipelines / events per squirt
+
+
+##1 Discovery searches
+## Debug ingestion
+## Indexing performance over time
+
+Find IP Addresses ===> index fields for IP addresses
+
+cost per search
+cost per ingestion
+
+
+
+
+| dbinspect 
+| rest /services/data/indexes 
+index=_internal
+index=_introspection
