@@ -3,7 +3,7 @@
 | File | Description |
 | ---- | ----------- |
 | [backup.sh](backup.sh) | Simple backup script |
-| [codenames.md](codenames.md) | Codenames for Splunk versions
+| [codenames.md](codenames.md) | Codenames for Splunk versions |
 | [cron.spl](cron.spl) | Find frequently running saved searches, thanks Nico! |
 | [dbx.md](dbx.md) | Database Connect settings for openjdk-11 |
 | [gr8.md](gr8.md) | Great Eight (gr8) settings |
