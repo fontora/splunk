@@ -193,3 +193,32 @@ cost per ingestion
 | rest /services/data/indexes 
 index=_internal
 index=_introspection
+
+
+
+Migration other smart store
+==> turn off scheduled searches
+==> ingestion off
+
+20 more nodes to Jira
+
+security ~ 50TB
+Jira = 120 nodes, was 100 (20 new)
+      = 615 TB (~80-90 TB/day)
+      doing about 750 GB/day per indexer
+      Estimate ~6 hours
+
+WLM   60    index, also includes cluster fuctionality.. like restarts etc.
+      30    search
+      10    misc
+
+"Splunk Controller" -- their version of splunk operator
+
+Increase instance type to 12xl
+-- maybe decrease node etc?
+
+potentially look at going back to operator.
+
+deployments per region
+
+## Health Check ##
