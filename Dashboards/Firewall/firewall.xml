@@ -1,0 +1,231 @@
+<form script="splunk_ps_tabs:tabs.js" stylesheet="splunk_ps_tabs:tabs.css">
+  <label>Firewall</label>
+  <description>Currently only corporate Fortigate</description>
+  <fieldset submitButton="false" autoRun="true">
+    <input type="dropdown" token="tok_user" searchWhenChanged="true">
+      <label>Username</label>
+      <fieldForLabel>user</fieldForLabel>
+      <fieldForValue>user</fieldForValue>
+      <search>
+        <query>| tstats count from datamodel=Network_Traffic by All_Traffic.user
+| rename All_Traffic.user as user</query>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </search>
+    </input>
+    <input type="time" token="tok_time" searchWhenChanged="true">
+      <label></label>
+      <default>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+  </fieldset>
+  <row id="tabs">
+    <panel>
+      <html>
+        <ul id="tabs" class="nav nav-tabs">
+          <li class="active">
+            <a href="#" class="toggle-tab" data-toggle="tab" data-elements="tab_overview_1,tab_overview_2" data-token="tok_tab_overview">Overview</a>
+          </li>
+          <li>
+           <a href="#" class="toggle-tab" data-toggle="tab" data-elements="tab_user_1,tab_user_2" data-token="tok_tab_user">User Lookup</a>
+          </li>
+        </ul>
+      </html>
+    </panel>
+  </row>
+  <row id="tab_overview_1">
+    <panel>
+      <chart>
+        <title>Actions over Time</title>
+        <search>
+          <query>| tstats count from datamodel=Network_Traffic by All_Traffic.action, _time span=5m
+| timechart sum(count) as count by All_Traffic.action</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="charting.chart">column</option>
+        <option name="charting.chart.stackMode">stacked</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row id="tab_overview_2">
+    <panel>
+      <chart>
+        <title>Source IP</title>
+        <search>
+          <query>| tstats count where index=fortinet by PREFIX(srcip=)
+| rename srcip= as "srcip"
+| stats sum(count) as count by srcip
+| sort - count
+| head 15</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>Source Port</title>
+        <search>
+          <query>| tstats count where index=fortinet by PREFIX(srcport=)
+| rename srcport= as "srcport"
+| stats sum(count) as count by srcport
+| sort - count
+| head 15</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>Dest. IP</title>
+        <search>
+          <query>| tstats count where index=fortinet by PREFIX(dstip=)
+| rename dstip= as "dstip"
+| stats sum(count) as count by dstip
+| sort - count
+| head 15</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>Dest. Port</title>
+        <search>
+          <query>| tstats count where index=fortinet by PREFIX(dstport=)
+| rename dstport= as "dstport"
+| stats sum(count) as count by dstport
+| sort - count
+| head 15</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>User (excluding 'unknown')</title>
+        <search>
+          <query>| tstats count from datamodel=Network_Traffic by All_Traffic.user
+| stats sum(count) as count by All_Traffic.user
+| search All_Traffic.user!="unknown"
+| sort - count
+| head 15</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row id="tab_user_1">
+    <panel>
+      <chart>
+        <title>Actions over Time</title>
+        <search>
+          <query>| tstats count from datamodel=Network_Traffic where All_Traffic.user="$tok_user$" by All_Traffic.action, _time span=5m
+| search $tok_tab_user$
+| timechart sum(count) as count by All_Traffic.action</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="charting.chart">column</option>
+        <option name="charting.chart.stackMode">stacked</option>
+        <option name="charting.drilldown">none</option>
+       <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row id="tab_user_2">
+    <panel>
+      <chart>
+        <title>Source IP</title>
+        <search>
+          <query>| tstats count from datamodel=Network_Traffic where All_Traffic.user="$tok_user$" by All_Traffic.src_ip
+| search $tok_tab_user$
+| stats sum(count) as count by All_Traffic.src_ip
+| sort - count
+| head 15
+| rename All_Traffic.src_ip as src_ip</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>Source Port</title>
+        <search>
+          <query>| tstats count from datamodel=Network_Traffic where All_Traffic.user="$tok_user$" by All_Traffic.src_port
+| search $tok_tab_user$
+| stats sum(count) as count by All_Traffic.src_port
+| sort - count
+| head 15
+| rename All_Traffic.src_port as src_port</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>Dest. IP</title>
+        <search>
+          <query>| tstats count from datamodel=Network_Traffic where All_Traffic.user="$tok_user$" by All_Traffic.dest_ip
+| search $tok_tab_user$
+| stats sum(count) as count by All_Traffic.dest_ip
+| sort - count
+| head 15
+| rename All_Traffic.dest_ip as dest_ip</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>Dest. Port</title>
+        <search>
+          <query>| tstats count from datamodel=Network_Traffic where All_Traffic.user="$tok_user$" by All_Traffic.dest_port
+| search $tok_tab_user$
+| stats sum(count) as count by All_Traffic.dest_port
+| sort - count
+| head 15
+| rename All_Traffic.dest_port as dest_port</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+</form>

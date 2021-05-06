@@ -1,41 +1,106 @@
-<form>
+<form script="splunk_ps_tabs:tabs.js" stylesheet="splunk_ps_tabs:tabs.css">
   <label>Web</label>
-  <fieldset submitButton="true">
+  <fieldset submitButton="true" autoRun="true">
+    <input type="dropdown" token="tok_user" searchWhenChanged="true">
+      <label>Username</label>
+      <fieldForLabel>Web.user</fieldForLabel>
+      <fieldForValue>Web.user</fieldForValue>
+      <search>
+        <query>| tstats count from datamodel=Web by Web.user</query>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </search>
+    </input>
     <input type="time" token="tok_time">
       <label></label>
       <default>
-        <earliest>-4h@m</earliest>
+        <earliest>-24h@h</earliest>
         <latest>now</latest>
       </default>
     </input>
+    <input type="radio" token="tok_exc_dest">
+      <label>Exclude Common Dest.</label>
+      <choice value="yes">Yes</choice>
+      <choice value="no">No</choice>
+      <default>yes</default>
+    </input>
   </fieldset>
-  <row>
+  <row id="tabs">
     <panel>
-      <title>Events over Time</title>
+      <html>
+        <ul id="tabs" class="nav nav-tabs">
+          <li class="active">
+            <a href="#" class="toggle-tab" data-toggle="tab" data-elements="tab_overview_1,tab_overview_2,tab_overview_3" data-token="tok_tab_overview">Overview</a>
+          </li>
+          <li>
+            <a href="#" class="toggle-tab" data-toggle="tab" data-elements="tab_user_1,tab_user_2,tab_user_3" data-token="tok_tab_user">User Lookup</a>
+          </li>
+        </ul>
+      </html>
+    </panel>
+  </row>
+  <row id="tab_overview_1">
+    <panel>
       <chart>
+        <title>Events over Time</title>
         <search>
-          <query>| tstats count WHERE index=web by _time span=5m</query>
+          <query>| tstats count FROM datamodel=Web
+    WHERE NOT
+    [| inputlookup common_dests
+    | fields dest
+    | rename dest AS "Web.dest"
+    | format ]
+    BY Web.dest, Web.action, _time
+| fields Web.action, count
+| timechart sum(count) AS count BY Web.action
+| rename cousnt AS "Count"</query>
           <earliest>$tok_time.earliest$</earliest>
           <latest>$tok_time.latest$</latest>
         </search>
         <option name="charting.axisLabelsX.majorLabelStyle.rotation">-45</option>
         <option name="charting.axisTitleX.visibility">collapsed</option>
         <option name="charting.axisTitleY.visibility">collapsed</option>
-        <option name="charting.chart">area</option>
-        <option name="charting.chart.showDataLabels">minmax</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.chart">column</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.stackMode">stacked</option>
         <option name="charting.drilldown">none</option>
-        <option name="charting.legend.placement">none</option>
+        <option name="charting.legend.placement">right</option>
         <option name="refresh.display">progressbar</option>
       </chart>
     </panel>
   </row>
-  <row>
+  <row id="tab_overview_2">
     <panel>
-      <title>Top Categories</title>
-      <chart>
+      <single>
+        <title>Total Downloads</title>
         <search>
-          <query>index=web
-| top category</query>
+          <query>| tstats sum(Web.bytes_in) AS bytes_in FROM datamodel=Web BY Web.dest
+| lookup common_dests dest AS Web.dest OUTPUT dest AS exclude_dest_flag
+| eval exclude_host=if($tok_exc_dest|s$=="yes" AND isnotnull(exclude_dest_flag), 1, 0)
+| where exclude_host=0
+| stats sum(bytes_in) AS bytes_in
+| eval bytes_in=bytes_in/1024/1024</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="numberPrecision">0.00</option>
+        <option name="rangeColors">["0x53a051","0x0877a6","0xf8be34","0xf1813f","0xdc4e41"]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="unit">MiB</option>
+      </single>
+    </panel>
+    <panel>
+      <chart>
+        <title>Categories (excluding '-')</title>
+        <search>
+          <query>| tstats count FROM datamodel=Web WHERE NOT Web.category="-" BY Web.dest, Web.category
+| lookup common_dests dest AS Web.dest OUTPUT dest AS exclude_dest_flag
+| eval exclude_host=if($tok_exc_dest|s$=="yes" AND isnotnull(exclude_dest_flag), 1, 0)
+| where exclude_host=0
+| stats sum(count) AS count BY Web.category
+| rename Web.category AS "Categories", count AS "Count"</query>
           <earliest>$tok_time.earliest$</earliest>
           <latest>$tok_time.latest$</latest>
         </search>
@@ -45,74 +110,251 @@
       </chart>
     </panel>
     <panel>
-      <title>Actions</title>
       <chart>
+        <title>Destination Port (excluding 80 and 443)</title>
         <search>
-          <query>index=web 
-| top action</query>
+          <query>| tstats count FROM datamodel=Web WHERE NOT Web.dest_port IN (80, 443) by Web.dest, Web.dest_port
+| lookup common_dests dest AS Web.dest OUTPUT dest AS exclude_dest_flag
+| eval exclude_host=if($tok_exc_dest|s$=="yes" AND isnotnull(exclude_dest_flag), 1, 0)
+| where exclude_host=0
+| stats sum(count) AS count BY Web.dest_port
+| rename Web.dest_port AS "Dest. Port", count AS "Count"</query>
           <earliest>$tok_time.earliest$</earliest>
           <latest>$tok_time.latest$</latest>
         </search>
-        <option name="charting.axisTitleX.visibility">collapsed</option>
-        <option name="charting.axisTitleY.visibility">collapsed</option>
-        <option name="charting.chart">column</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.chart">pie</option>
         <option name="charting.drilldown">none</option>
-        <option name="charting.legend.placement">none</option>
         <option name="refresh.display">progressbar</option>
       </chart>
     </panel>
+  </row>
+  <row id="tab_overview_3">
     <panel>
-      <title>Total Downloads</title>
-      <single>
+      <table>
+        <title>Destinations</title>
         <search>
-          <query>index=web
-| stats sum(bytes_out) as total_bytes_out
-| eval total_gb_out=round(total_bytes_out/1024/1024,2)
-| fields total_gb_out</query>
+          <query>| tstats count FROM datamodel=Web BY Web.dest
+| lookup common_dests dest AS Web.dest OUTPUT dest AS exclude_dest_flag
+| eval exclude_host=if($tok_exc_dest|s$=="yes" AND isnotnull(exclude_dest_flag), 1, 0)
+| where exclude_host=0
+| fields Web.dest, count
+| sort - count
+| head 50
+| rename Web.dest AS "Destination Host", count AS "Count"</query>
           <earliest>$tok_time.earliest$</earliest>
           <latest>$tok_time.latest$</latest>
         </search>
         <option name="drilldown">none</option>
-        <option name="numberPrecision">0</option>
-        <option name="rangeColors">["0x53a051","0x0877a6","0xf8be34","0xf1813f","0xdc4e41"]</option>
         <option name="refresh.display">progressbar</option>
-        <option name="unit">GiB</option>
-      </single>
-    </panel>
-  </row>
-  <row>
-    <panel>
-      <title>Top Destinations</title>
-      <chart>
-        <search>
-          <query>index=web 
-| top dest_host</query>
-          <earliest>$tok_time.earliest$</earliest>
-          <latest>$tok_time.latest$</latest>
-        </search>
-        <option name="charting.axisTitleX.visibility">collapsed</option>
-        <option name="charting.axisTitleY.visibility">collapsed</option>
-        <option name="charting.axisY.scale">linear</option>
-        <option name="charting.chart">bar</option>
-        <option name="charting.drilldown">none</option>
-        <option name="charting.legend.placement">none</option>
-        <option name="refresh.display">progressbar</option>
-      </chart>
+        <format type="number" field="Count">
+          <option name="precision">0</option>
+        </format>
+      </table>
     </panel>
     <panel>
       <table>
+        <title>HTTP Content Type</title>
         <search>
-          <query>index=web http_user_agent!="-" 
-| top 5 http_user_agent
-| fields - count
-| rename http_user_agent as "User Agent", percent as "Percent"</query>
+          <query>| tstats count FROM datamodel=Web WHERE NOT Web.http_content_type="unknown" BY Web.dest, Web.http_content_type
+| lookup common_dests dest AS Web.dest OUTPUT dest AS exclude_dest_flag
+| eval exclude_host=if($tok_exc_dest|s$=="yes" AND isnotnull(exclude_dest_flag), 1, 0)
+| where exclude_host=0
+| fields Web.http_content_type, count
+| sort - count
+| head 15
+| rename Web.http_content_type AS "HTTP Content Type", count AS "Count"</query>
           <earliest>$tok_time.earliest$</earliest>
           <latest>$tok_time.latest$</latest>
         </search>
-        <option name="count">10</option>
         <option name="drilldown">none</option>
         <option name="refresh.display">progressbar</option>
-        <format type="number" field="Percent"></format>
+        <format type="number" field="Count">
+          <option name="precision">0</option>
+        </format>
+      </table>
+    </panel>
+    <panel>
+      <table>
+        <title>HTTP Referrer</title>
+        <search>
+          <query>| tstats count FROM datamodel=Web WHERE NOT Web.http_referrer="unknown" BY Web.dest, Web.http_referrer
+| lookup common_dests dest AS Web.dest OUTPUT dest AS exclude_dest_flag
+| eval exclude_host=if($tok_exc_dest|s$=="yes" AND isnotnull(exclude_dest_flag), 1, 0)
+| where exclude_host=0
+| fields Web.http_referrer, count
+| sort - count
+| head 15
+| rename Web.http_referrer AS "HTTP Referrer", count AS "Count"</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <format type="number" field="Count">
+          <option name="precision">0</option>
+        </format>
+      </table>
+    </panel>
+  </row>
+  <row id="tab_user_1">
+    <panel>
+      <chart>
+        <title>Events over Time</title>
+        <search>
+          <query>| tstats count FROM datamodel=Web
+    WHERE Web.user="$tok_user$" NOT
+    [| inputlookup common_dests
+    | fields dest
+    | rename dest AS "Web.dest"
+    | format ]
+    BY Web.dest, Web.action, _time $tok_tab_user$
+| fields Web.action, count
+| timechart sum(count) AS count BY Web.action
+| rename cousnt AS "Count"</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">-45</option>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">collapsed</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.chart">column</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.stackMode">stacked</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row id="tab_user_2">
+    <panel>
+      <single>
+        <title>Total Downloads</title>
+        <search>
+          <query>| tstats sum(Web.bytes_in) AS bytes_in FROM datamodel=Web WHERE Web.user="$tok_user$" $tok_tab_user$ BY Web.dest $tok_tab_user$
+| lookup common_dests dest AS Web.dest OUTPUT dest AS exclude_dest_flag
+| eval exclude_host=if($tok_exc_dest|s$=="yes" AND isnotnull(exclude_dest_flag), 1, 0)
+| where exclude_host=0
+| stats sum(bytes_in) AS bytes_in
+| eval bytes_in=bytes_in/1024/1024</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="numberPrecision">0.00</option>
+        <option name="rangeColors">["0x53a051","0x0877a6","0xf8be34","0xf1813f","0xdc4e41"]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="unit">MiB</option>
+      </single>
+    </panel>
+    <panel>
+      <chart>
+        <title>Categories</title>
+        <search>
+          <query>| tstats count FROM datamodel=Web WHERE Web.user="$tok_user$" BY Web.dest, Web.category $tok_tab_user$
+| lookup common_dests dest AS Web.dest OUTPUT dest AS exclude_dest_flag
+| eval exclude_host=if($tok_exc_dest|s$=="yes" AND isnotnull(exclude_dest_flag), 1, 0)
+| where exclude_host=0
+| stats sum(count) AS count BY Web.category
+| rename Web.category AS "Categories", count AS "Count"</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>Destination Port</title>
+        <search>
+          <query>| tstats count FROM datamodel=Web WHERE Web.user="$tok_user$" BY Web.dest, Web.dest_port $tok_tab_user$
+| lookup common_dests dest AS Web.dest OUTPUT dest AS exclude_dest_flag
+| eval exclude_host=if($tok_exc_dest|s$=="yes" AND isnotnull(exclude_dest_flag), 1, 0)
+| where exclude_host=0
+| stats sum(count) AS count BY Web.dest_port
+| rename Web.dest_port AS "Dest. Port", count AS "Count"</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row id="tab_user_3">
+    <panel>
+      <table>
+        <title>Destinations</title>
+        <search>
+          <query>| tstats count FROM datamodel=Web WHERE Web.user="$tok_user$" BY Web.dest $tok_tab_user$
+| lookup common_dests dest AS Web.dest OUTPUT dest AS exclude_dest_flag
+| eval exclude_host=if($tok_exc_dest|s$=="yes" AND isnotnull(exclude_dest_flag), 1, 0)
+| where exclude_host=0
+| fields Web.dest, count
+| sort - count
+| head 50
+| rename Web.dest AS "Destination Host", count AS "Count"</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <format type="number" field="Count">
+          <option name="precision">0</option>
+        </format>
+      </table>
+    </panel>
+    <panel>
+      <table>
+        <title>HTTP Content Type</title>
+        <search>
+          <query>| tstats count FROM datamodel=Web WHERE Web.user="$tok_user$" BY Web.dest, Web.http_content_type $tok_tab_user$
+| lookup common_dests dest AS Web.dest OUTPUT dest AS exclude_dest_flag
+| eval exclude_host=if($tok_exc_dest|s$=="yes" AND isnotnull(exclude_dest_flag), 1, 0)
+| where exclude_host=0
+| stats sum(count) as count BY Web.http_content_type
+| sort - count
+| head 15
+| rename Web.http_content_type AS "HTTP Content Type", count AS "Count"</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <format type="number" field="Count">
+          <option name="precision">0</option>
+        </format>
+      </table>
+    </panel>
+    <panel>
+      <table>
+        <title>HTTP Referrer</title>
+        <search>
+          <query>| tstats count FROM datamodel=Web WHERE Web.user="$tok_user$" BY Web.dest, Web.http_referrer $tok_tab_user$
+| lookup common_dests dest AS Web.dest OUTPUT dest AS exclude_dest_flag
+| eval exclude_host=if($tok_exc_dest|s$=="yes" AND isnotnull(exclude_dest_flag), 1, 0)
+| where exclude_host=0
+| stats sum(count) as count BY Web.http_referrer
+| sort - count
+| head 15
+| rename Web.http_referrer AS "HTTP Referrer", count AS "Count"</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <format type="number" field="Count">
+          <option name="precision">0</option>
+        </format>
       </table>
     </panel>
   </row>

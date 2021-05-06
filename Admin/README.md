@@ -4,6 +4,7 @@
 | ---- | ----------- |
 | [backup.sh](backup.sh) | Simple backup script |
 | [codenames.md](codenames.md) | Codenames for Splunk versions |
+| [config_grabber.sh](config_grabber.sh) | Simple script to that grabs btool and ls outputs |
 | [cron.spl](cron.spl) | Find frequently running saved searches, thanks Nico! |
 | [dbx.md](dbx.md) | Database Connect settings for openjdk-11 |
 | [gr8.md](gr8.md) | Great Eight (gr8) settings |

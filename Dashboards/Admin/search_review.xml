@@ -1,0 +1,46 @@
+<dashboard>
+  <label>Search Review</label>
+  <row>
+    <panel>
+      <table>
+        <title>Lispy - 24 Hours</title>
+        <search>
+          <query>index=_audit search_id TERM(action=search) (info=granted OR info=completed) 
+| stats first(_time) as _time first(total_run_time) as total_run_time first(event_count) as event_count first(scan_count) as scan_count first(user) as user first(savedsearch_name) as savedsearch_name first(search) as search by search_id 
+| eval lispy_efficiency = event_count / scan_count 
+| where lispy_efficiency &lt; 0.5 AND total_run_time &gt; 5 AND scan_count &gt; 100
+| table lispy_efficiency, *</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <format type="number" field="scan_count">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="event_count">
+          <option name="precision">0</option>
+        </format>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Generic - Live</title>
+        <search>
+          <query>| rest splunk_server=* count=250 /services/search/jobs 
+| fields splunk_server, author, earliestTime, latestTime, request.adhoc_search_level, diskUsage, dispatchState, eventCount, resultCount, scanCount, eventSearch, isSavedSearch, label, provenance, request.adhoc_search_level, "eai:acl.app", runDuration 
+| search NOT author IN ("", "splunk-system-user") 
+| eval diskUsageMB=(diskUsage/1024/1024),
+    eps=scanCount/runDuration,
+    latestTime=if(isnull(latestTime), strftime(now(), "%Y-%m-%dT%H:%M:%S.%3N%:z"), latestTime),
+    searchWindow=round(strptime(latestTime, "%Y-%m-%dT%H:%M:%S")-strptime(earliestTime, "%Y-%m-%dT%H:%M:%S"))</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+      </table>
+    </panel>
+  </row>
+</dashboard>
