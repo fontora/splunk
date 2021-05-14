@@ -222,3 +222,15 @@ potentially look at going back to operator.
 deployments per region
 
 ## Health Check ##
+
+
+#########################################
+
+2:1 pipelines HF to IDX
+
+Not having to restart indexers
+
+
+"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" --user-data-dir="%USERPROFILE%\proxy-profile"  --proxy-server="socks5://localhost:9095"
+
+ssh -i MyDocuments/msearles_splunk.key -D 9095 -N msearles@54.204.187.115
