@@ -7,3 +7,4 @@
 | 8.0 | Quake |
 | 7.3 | Pinkie Pie |
 | 7.2 | Orange Swirl |
+| 7.1 | Night Light |
