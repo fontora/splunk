@@ -6,6 +6,8 @@
 
 | Version | Description |
 | ------- | ----------- |
+| 8.2 | Federated Search |
+| 8.2 | Dashboard Studio built in |
 | 8.1 | SPL comments: \`\`\`this is a comment\`\`\` |
 | 8.0.5 | New command: `require` |
 | 8.0 | Python 3.7 support |
