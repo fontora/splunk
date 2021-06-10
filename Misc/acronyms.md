@@ -6,6 +6,7 @@
 | CM   | Cluster Master |
 | DSP  | Data Stream Processor |
 | ES   | Enterprise Security |
+| FS   | Federate Search |
 | HF   | Heavy Forwarder |
 | IDX  | Indexer |
 | ITSI | IT Service Intelligence |
