@@ -30,15 +30,16 @@ echo -e "Collection starting\n"
 echo -e "###########"
 echo -e "## BTOOL ##"
 echo -e "###########\n"
+
 for config in ${configs[@]}; do
   echo -e "\n## ${config}.conf ##\n"
   ${splunk_bin} btool ${config} ${btool_opts} | ${btool_exclude} | ${output}
 done
-echo
 
-echo -e "########"
+echo -e "\n########"
 echo -e "## LS ##"
 echo -e "########\n"
+
 find ${paths} -type f -name ${paths_filter} | ${output}
 
 echo -e "\nCollection ended"
