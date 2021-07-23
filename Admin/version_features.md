@@ -10,6 +10,14 @@
 | 8.2 | Dashboard Studio built in |
 | 8.2 | KV Store backup/restore improvements |
 | 8.2 | Durable search |
+| 8.1.1 | Rapid Diag |
+| 8.1.1 | Linux polkit rules for systemd |
+| 8.1 | Ingest-time lookups |
+| 8.1 | Metrics removed rawdata journal, only TSIDX |
+| 8.1 | SmartStore 'lruk' cache eviction policy |
+| 8.1 | Global banner notifications |
+| 8.1 | UF HTTP Out |
+| 8.1 | Conditional license enforcement |
 | 8.1 | SPL comments: \`\`\`this is a comment\`\`\` |
 | 8.0.5 | New command: `require` |
 | 8.0 | Python 3.7 support |
@@ -17,6 +25,7 @@
 | 8.0 | Shared data model acceleration summaries |
 | 8.0 | New command option: `PREFIX` added to tstats |
 | 8.0 | Cascading knowledge bundle replication |
+| 8.0 | Metrics support multiple measurements per metric data point |
 | 7.4 | Metrics rollups |
 | 7.3 | Splunk Metrics Workspace in splunk |
 | 7.3 | New command: `walklex` |
@@ -81,10 +90,10 @@
 
 | Version | Description |
 | ------- | ----------- |
-| 8.1    | &gt;100 GB license enforcement |
-| 7.2.2  | systemd temporarily made default on enable-boot |
-| 7.1.10 | datetime.xml issue |
-| 6.5    | No enforcement licenses available |
+| 8.1     | &gt;100 GB license enforcement |
+| 7.2.2   | systemd temporarily made default on enable-boot |
+| 7.1.10  | datetime.xml issue |
+| 6.5     | No enforcement licenses available |
 
 ## Operating Systems
 
