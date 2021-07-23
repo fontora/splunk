@@ -16,10 +16,10 @@ Upgrade Splunk Core first, then apps.
 
 ## Verification
 
-DS: Config reload successful, clients phoning home
-LM: Indexers checking in, forwarding to indexing tier
-CM: Cluster is searchable, fix-ups done, search peers stable
-MC: All nodes present, passes Health Check, verify search, verify indexing
-Deployer: Able to push bundles to all SHC nodes
-SH: External auth, apps, search works, users can login
-IDX: Receiving data, fix-up tasks completed, searches work
+- **DS:** Config reload successful, clients phoning home
+- **LM:** Indexers checking in, forwarding to indexing tier
+- **CM:** Cluster is searchable, fix-ups done, search peers stable
+- **MC:** All nodes present, passes Health Check, verify search, verify indexing
+- **Deployer:** Able to push bundles to all SHC nodes
+- **SH:** External auth, apps, search works, users can login
+- **IDX:** Receiving data, fix-up tasks completed, searches work
