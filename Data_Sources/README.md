@@ -1,7 +1,7 @@
 # Common Data Sources
 
-| README | Description |
-| --- | --- |
+| File | Description |
+| ---- | ----------- |
 | [rsyslog.conf](rsyslog.conf) | Example rsyslog server config |
 | [syslog-ng.conf](syslog-ng.conf) | Example syslog-ng server config |
 | [syslog.md](syslog.md) | Syslog README |
