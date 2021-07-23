@@ -8,6 +8,8 @@
 | ------- | ----------- |
 | 8.2 | Federated Search |
 | 8.2 | Dashboard Studio built in |
+| 8.2 | KV Store backup/restore improvements |
+| 8.2 | Durable search |
 | 8.1 | SPL comments: \`\`\`this is a comment\`\`\` |
 | 8.0.5 | New command: `require` |
 | 8.0 | Python 3.7 support |
@@ -71,6 +73,7 @@
 | Version | Description |
 | ------- | ----------- |
 | -   | Python 2.7 (it's [complicated](https://docs.splunk.com/Documentation/Splunk/latest/Python3Migration)) |
+| 8.2 | HTML dashboards |
 | 6.0 | Light Forwarder: `SplunkLightForwarder` |
 | 5.0 | File system change monitor: `fschange` |
 
