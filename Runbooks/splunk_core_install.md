@@ -1,6 +1,8 @@
-# Splunk UF - Install
+# Splunk Core - Install
 
-Tested for 8.2.1 on 2021.07.23.
+- Date: 2021.07.23
+- Splunk Core: v8.2.1
+- OS: RHEL 7 & 8, CentOS 7 & 8, Rocky 8, Ubuntu 16/18/20 LTS, AWS Linux 2
 
 ## Base install
 

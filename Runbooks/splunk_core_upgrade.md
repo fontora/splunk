@@ -1,6 +1,8 @@
 # Splunk Core - Upgrade
 
-Tested for 8.2.1 on 2021.07.23.
+- Date: 2021.07.23
+- Splunk Core: v8.2.1
+- OS: RHEL 7 & 8, CentOS 7 & 8, Rocky 8, Ubuntu 16/18/20 LTS, AWS Linux 2
 
 ```bash
 # Download the Splunk Core 8.2.1
@@ -21,11 +23,8 @@ sudo tar -zxvf splunk-8.2.1-ddff1c41e5cf-Linux-x86_64.tgz -C /opt/
 # Change ownership of the extracted files
 sudo chown -R splunk: /opt/splunk/
 
-# Accept the migration warnings (without checking!)
-sudo -iu splunk /opt/splunk/bin/splunk status --accept-license --answer-yes --no-prompt
-
-# Start Splunk
-sudo systemctl start Splunkd
+# Accept the migration warnings (without checking!) and start Splunk
+sudo -iu splunk /opt/splunk/bin/splunk start --accept-license --answer-yes --no-prompt
 
 # Verify
 sudo tail -F /opt/splunk/var/log/splunk/splunkd.log
