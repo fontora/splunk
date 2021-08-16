@@ -36,13 +36,11 @@ EOL
 # Enable Splunk to start automatically using systemd
 sudo /opt/splunk/bin/splunk enable boot-start -user splunk --accept-license -systemd-managed 1
 
-# Modify ulimits in the newly created unit file to update/add the following:
-#   LimitCORE=0
-#   LimitFSIZE=infinity
-#   LimitNOFILE=65536
-#   LimitNPROC=20480
-#   LimitDATA=infinity
-sudo vim /etc/systemd/system/Splunkd.service
+# Update ulimits in unit file
+sudo sed -i 's/^LimitNOFILE=65536/LimitCORE=0\nLimitFSIZE=infinity\nLimitNOFILE=65536\nLimitNPROC=20480\nLimitDATA=infinity/' /etc/systemd/system/Splunkd.service
+
+# Add an alias of 'splunk.service', no one likes capitals in Linux
+sudo sed -i '/^\[Install\]/a Alias=splunk.service' /etc/systemd/system/Splunkd.service
 ```
 
 ## systemd Checks
