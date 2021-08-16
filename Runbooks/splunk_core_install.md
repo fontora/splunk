@@ -81,8 +81,10 @@ firewalld commands, TODO ufw:
 ```bash
 # Open ports as required
 sudo firewall-cmd --add-port={443/tcp,8000/tcp,8089/tcp}
+
 # Redirect 443 to 8000 for "prettiness"
 sudo firewall-cmd --add-forward-port=port=443:proto=tcp:toport=8000
+
 # Save the changes
 sudo firewall-cmd --runtime-to-permanent
 sudo firewall-cmd --reload
