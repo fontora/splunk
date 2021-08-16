@@ -41,6 +41,7 @@ sudo sed -i 's/^LimitNOFILE=65536/LimitCORE=0\nLimitFSIZE=infinity\nLimitNOFILE=
 
 # Add an alias of 'splunk.service', no one likes capitals in Linux
 sudo sed -i '/^\[Install\]/a Alias=splunk.service' /etc/systemd/system/Splunkd.service
+sudo systemctl enable /etc/systemd/system/Splunkd.service
 ```
 
 ## systemd Checks
