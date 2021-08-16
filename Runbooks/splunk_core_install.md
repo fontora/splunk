@@ -76,7 +76,7 @@ sudo systemctl enable --now disable-thp
 
 ## Host Firewall
 
-firewalld commands, TODO ufw:
+firewalld commands
 
 ```bash
 # Open ports as required
