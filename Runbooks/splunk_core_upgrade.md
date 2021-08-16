@@ -24,7 +24,7 @@ sudo tar -zxvf splunk-8.2.1-ddff1c41e5cf-Linux-x86_64.tgz -C /opt/
 sudo chown -R splunk: /opt/splunk/
 
 # Accept the migration warnings (without checking!) and start Splunk
-sudo -iu splunk /opt/splunk/bin/splunk start --accept-license --answer-yes --no-prompt
+/opt/splunk/bin/splunk start --accept-license --answer-yes --no-prompt
 
 # Verify
 sudo tail -F /opt/splunk/var/log/splunk/splunkd.log
