@@ -1,6 +1,3 @@
-External sender. Exercise caution.
-UNOFFICIAL
- 
 <form>
   <label>App List</label>
   <fieldset submitButton="false" autoRun="true">
