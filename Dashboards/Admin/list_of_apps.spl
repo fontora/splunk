@@ -1,9 +1,0 @@
-| rest splunk_server=* /services/apps/local
-| search NOT core=1 AND version=*
-| fields label, title, version, details, disabled, splunk_server
-| lookup dmc_assets host AS splunk_server OUTPUT search_group AS dmc_role
-| eval mv_role=mvfilter(match(dmc_role, "dmc_group_search_head|dmc_group_deployment_server|dmc_group_license_master|dmc_group_indexer|dmc_group_cluster_master"))
-| rex field=mv_role "dmc_group_(?<role>.*)"
-| fields - mv_role, dmc_role
-| sort - role, splunk_server
-| rename label AS "App", title AS "App Dir. Name", version AS "Version", details AS "Update URL", disabled AS "Disabled?", splunk_server AS "Splunk Server", role as "Splunk Role" 

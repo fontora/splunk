@@ -1,0 +1,92 @@
+External sender. Exercise caution.
+UNOFFICIAL
+ 
+<form>
+  <label>App List</label>
+  <fieldset submitButton="false" autoRun="true">
+    <input type="dropdown" token="tok_host" searchWhenChanged="true">
+      <label>Splunk Server</label>
+      <choice value="*">ALL</choice>
+      <fieldForLabel>host</fieldForLabel>
+      <fieldForValue>host</fieldForValue>
+      <search>
+        <query>| rest splunk_server=* /services/apps/local
+| stats values(splunk_server) as host
+| mvexpand host</query>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </search>
+      <default>*</default>
+    </input>
+    <input type="dropdown" token="tok_app" searchWhenChanged="true">
+      <label>App</label>
+      <choice value="*">ALL</choice>
+      <default>*</default>
+      <fieldForLabel>app</fieldForLabel>
+      <fieldForValue>app</fieldForValue>
+      <search>
+        <query>| rest splunk_server=$tok_host$ /services/apps/local
+| search NOT core=1 AND version=*
+| stats values(title) as app
+| mvexpand app</query>
+        <earliest>0</earliest>
+        <latest></latest>
+      </search>
+    </input>
+    <input type="dropdown" token="tok_role" searchWhenChanged="true">
+      <label>Splunk Role</label>
+      <choice value="*">ALL</choice>
+      <default>*</default>
+      <fieldForLabel>role</fieldForLabel>
+      <fieldForValue>role</fieldForValue>
+      <search>
+        <query>| inputlookup dmc_assets
+| stats values(search_group) as dmc_role
+| eval mv_role=mvfilter(match(dmc_role, "dmc_group_search_head|dmc_group_deployment_server|dmc_group_license_master|dmc_group_indexer|dmc_group_cluster_master"))
+| rex field=mv_role "dmc_group_(?&lt;role&gt;.*)"
+| fields role
+| mvexpand role
+| sort role</query>
+        <earliest>0</earliest>
+        <latest></latest>
+      </search>
+    </input>
+    <input type="radio" token="tok_disabled" searchWhenChanged="true">
+      <label>Disabled?</label>
+      <choice value="1">Yes</choice>
+      <choice value="0">No</choice>
+      <choice value="*">Both</choice>
+      <default>0</default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <title>List of Apps by Server</title>
+      <table>
+        <search>
+          <query>| rest splunk_server=$tok_host$ /services/apps/local
+| search NOT core=1 version=* title=$tok_app$ disabled=$tok_disabled$
+| fields label, title, version, details, disabled, splunk_server
+| lookup dmc_assets host AS splunk_server OUTPUT search_group AS dmc_role
+| eval mv_role=mvfilter(match(dmc_role, "dmc_group_search_head|dmc_group_deployment_server|dmc_group_license_master|dmc_group_indexer|dmc_group_cluster_master"))
+| rex field=mv_role "dmc_group_(?&lt;role&gt;.*)"
+| search role=$tok_role$
+| table label, title, version, details, splunk_server, role, disabled
+| sort - role, splunk_server
+| rename label AS "App", title AS "App Dir. Name", version AS "Version", details AS "Update URL", disabled AS "Disabled?", splunk_server AS "Host", role  AS "Splunk Role"</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">100</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+</form>

@@ -1,6 +1,6 @@
 # Config Precedence
 
-``` 
+```bash
 # egrep "conf$" /opt/splunk/etc/system/default/conf.conf
 $users-base$/$user-restriction$/*/local                = conf
 $users-base$/$user-restriction$/*/default              = conf
