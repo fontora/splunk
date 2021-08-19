@@ -6,4 +6,4 @@
 | rex field=mv_role "dmc_group_(?<role>.*)"
 | fields - mv_role, dmc_role
 | sort - role, splunk_server
-| rename label AS "App", title AS "App Dir. Name", version AS "Version", details AS "Update URL", disabled AS "Disabled?", splunk_server AS "Splunk Server" 
+| rename label AS "App", title AS "App Dir. Name", version AS "Version", details AS "Update URL", disabled AS "Disabled?", splunk_server AS "Splunk Server", role as "Splunk Role" 
