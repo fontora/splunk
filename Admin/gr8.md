@@ -18,7 +18,7 @@ Optional
 ```dosini
 TZ             = UTC
 ANNOTATE_PUNCT = false
-KV_MODE        = false
+KV_MODE        = none
 ```
 
 ## UF
