@@ -1,0 +1,10 @@
+index="os_win_reg" sourcetype="WinRegistry" key_path="*\\security\\trusted locations\\*\\path" NOT registry_type="DeleteKey"
+| rex field=key_path "HKU\\\(?<sid>[^\\\]+)\\\software\\\policies\\\microsoft\\\office\\\(?<office_version>[\d\.]+)\\\(?<office_product)[^\\\]+)"
+``` Should be in a lookup ```
+| eval office=case(office_version="10.0", office_product." 2002",
+    office_version="11.0", office_product." 2003",
+    office_version="12.0", office_product." 2007",
+    office_version="15.0", office_product." 2013",
+    office_version="16.0", office_product." 2016+"),
+| stats values(data) as data by office
+| rename office as  "Office Product", data as "Trusted Location", count as "Count"

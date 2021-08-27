@@ -1,0 +1,15 @@
+index="os_win_reg" sourcetype="WinRegistry" key_path="*\\security\\blockcontentexecutionfrominternet" NOT registry_type="DeleteKey"
+| rex field=key_path "HKU\\\(?<sid>[^\\\]+)\\\software\\\policies\\\microsoft\\\office\\\(?<office_version>[\d\.]+)\\\(?<office_product)[^\\\]+)"
+``` Should be in a lookup ```
+| eval office=case(office_version="10.0", office_product." 2002",
+    office_version="11.0", office_product." 2003",
+    office_version="12.0", office_product." 2007",
+    office_version="15.0", office_product." 2013",
+    office_version="16.0", office_product." 2016+"),
+    ``` Should be in a lookup ```
+    macro_stat=case(data="0x00000001(1)", "Enable all macros",
+    data="0x00000002(2)", "Disable all with notifications",
+    data="0x00000003(3)", "Disable all except digitally signed macros",
+    data="0x00000004(4)", "Disable all without notifications"
+| stats values(sid) AS sid BY host, macro_state, office
+| rename host as "Server", office as "Office Product", macro_state as "Macro State", sid as "Security Identifier"
