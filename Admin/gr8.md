@@ -25,6 +25,7 @@ KV_MODE        = false
 
 ```dosini
 props.conf
+[your_sourcetype]
 EVENT_BREAKER_ENABLE = true
 EVENT_BREAKER        = <regex_same_as_SHOULD_LINEMERGE>
 ```
