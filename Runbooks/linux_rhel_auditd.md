@@ -1,7 +1,20 @@
-$ sudo grep log_group /etc/audit/auditd.conf
-log_group = splunk
+# RHEL auditd
 
-$ sudo service auditd restart
-$ sudo chgrp splunk /var/log/audit/audit.log*
+- Date: 2021.09.27
+- OS: RHEL 7 & 8, CentOS 7 & 8, Rocky 8, AWS Linux 2
 
-$ sudo getfacl -e /var/log/audit/audit.log /var/log/messages
+## /var/log
+
+```bash
+# Set splunk as the group
+sudo sed -i 's/^log_group = root/log_group = splunk/' /etc/audit/auditd.conf
+
+# Restart auditd 
+sudo service auditd restart
+
+# Change any existing files
+sudo chgrp splunk /var/log/audit/audit.log*
+
+# Verify
+sudo getfacl -e /var/log/audit/audit.log
+```

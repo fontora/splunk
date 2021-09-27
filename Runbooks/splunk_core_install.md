@@ -77,13 +77,13 @@ sudo systemctl enable --now disable-thp
 
 ## Host Firewall
 
-firewalld commands
+firewalld commands, only needed for RHEL / CentOS / Rocky.
 
 ```bash
 # Open ports as required
 sudo firewall-cmd --add-port={443/tcp,8000/tcp,8089/tcp}
 
-# Redirect 443 to 8000 for "prettiness"
+# Redirect 443 to 8000 if desired
 sudo firewall-cmd --add-forward-port=port=443:proto=tcp:toport=8000
 
 # Save the changes

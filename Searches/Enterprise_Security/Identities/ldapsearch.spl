@@ -40,5 +40,5 @@ index="ldapsearch" sourcetype="ldap:user" userAccountControl{}="NORMAL_ACCOUNT"
     work_city=if(l=="", null(), l).if(st=="", "", ", ".st) 
 | rex mode=sed field=phone "s#^\\||\\|$##" 
 | table identity, prefix, nick, first, last, suffix, email, phone, managedBy, priority, bunit, category, watchlist, startDate, endDate, work_city, work_country, work_lat, work_long, cim_entity_zone
-| outputlookup override_if_empty=false org_identities_admon.csv
+| outputlookup create_empty=false createinapp=true override_if_empty=false org_identities_admon.csv
 | stats count

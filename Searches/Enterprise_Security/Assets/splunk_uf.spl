@@ -15,5 +15,5 @@ index="_internal" sourcetype="splunkd" source="*metrics.log" component="Metrics"
     category=mvjoin(mvappend(category, "os:".lower(os)), "|"),
     priority=if(match(category, "splunk_hf|splunk_if"), "high", priority) 
 | table ip, mac, nt_host, dns, owner, priority, lat, long, city, country, bunit, category, pci_domain, is_expected, should_timesync, should_update, requires_av, cim_entity_zone 
-| outputlookup org_uf_assets
+| outputlookup create_empty=false createinapp=true override_if_empty=false org_uf_assets
 | stats count
