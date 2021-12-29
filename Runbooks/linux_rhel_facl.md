@@ -12,3 +12,5 @@ sudo setfacl -Rm d:u:splunk:rX,u:splunk:rX /var/log
 # Verify
 sudo getfacl -e /var/log/messages
 ```
+
+setfacl -bR /var/log

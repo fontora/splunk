@@ -1,23 +1,23 @@
 # Splunk Core - Install
 
-- Date: 2021.07.23
-- Splunk Core: v8.2.1
+- Date: 2021.10.04
+- Splunk Core: v8.2.2.1
 - OS: RHEL 7 & 8, CentOS 7 & 8, Rocky 8, Ubuntu 16/18/20 LTS, AWS Linux 2
 
 ## Base install
 
 ```bash
 # Download the Splunk Core 8.2.1
-wget -O splunk-8.2.1-ddff1c41e5cf-Linux-x86_64.tgz 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=8.2.1&product=splunk&filename=splunk-8.2.1-ddff1c41e5cf-Linux-x86_64.tgz&wget=true'
+wget -O splunk-8.2.2.1-ae6821b7c64b-Linux-x86_64.tgz 'https://d7wz6hmoaavd0.cloudfront.net/products/splunk/releases/8.2.2.1/linux/splunk-8.2.2.1-ae6821b7c64b-Linux-x86_64.tgz'
 
 # Download the MD5 hash
-wget -O splunk-8.2.1-ddff1c41e5cf-Linux-x86_64.tgz.md5 'https://download.splunk.com/products/splunk/releases/8.2.1/linux/splunk-8.2.1-ddff1c41e5cf-Linux-x86_64.tgz.md5'
+wget -O splunk-8.2.2.1-ae6821b7c64b-Linux-x86_64.tgz.md5 'https://d7wz6hmoaavd0.cloudfront.net/products/splunk/releases/8.2.2.1/linux/splunk-8.2.2.1-ae6821b7c64b-Linux-x86_64.tgz.md5'
 
 # Check the MD5 hash
-md5sum -c splunk-8.2.1-ddff1c41e5cf-Linux-x86_64.tgz.md5
+md5sum -c splunk-8.2.2.1-ae6821b7c64b-Linux-x86_64.tgz.md5
 
 # Extract Splunk
-sudo tar -zxvf splunk-8.2.1-ddff1c41e5cf-Linux-x86_64.tgz -C /opt/
+sudo tar -zxvf splunk-8.2.2.1-ae6821b7c64b-Linux-x86_64.tgz -C /opt/
 
 # Add a splunk user
 sudo useradd splunk

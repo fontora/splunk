@@ -10,6 +10,7 @@
 | 8.2 | Dashboard Studio built in |
 | 8.2 | KV Store backup/restore improvements |
 | 8.2 | Durable search |
+| 8.2 | Configuraiton audit |
 | 8.1.1 | Rapid Diag |
 | 8.1.1 | Linux polkit rules for systemd |
 | 8.1 | Ingest-time lookups |
