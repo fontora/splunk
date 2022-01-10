@@ -1,0 +1,39 @@
+<form theme="dark">
+  <label>Linux Disk Usage</label>
+  <fieldset submitButton="false">
+    <input type="dropdown" token="tok_top">
+      <label>Top Count</label>
+      <choice value="10">10</choice>
+      <choice value="25">25</choice>
+      <choice value="50">50</choice>
+      <choice value="100">100</choice>
+      <default>25</default>
+    </input>
+    <input type="time" token="tok_time">
+      <label></label>
+      <default>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <viz type="treemap_app.treemap">
+        <search>
+          <query>index=os_lin_script sourcetype="linux:du"
+| rex field=path "/(?&lt;level1&gt;[^\/]*)/(?&lt;level2&gt;.*)"
+| fillnull value="-" level2
+| stats sum(size) as size by level1, level2
+| sort 0 -size, level1
+| streamstats count as eventCount by level1
+| search eventCount&lt;=$tok_top$</query>
+          <earliest>$tok_time.earliest$</earliest>
+          <latest>$tok_time.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </viz>
+    </panel>
+  </row>
+</form>
