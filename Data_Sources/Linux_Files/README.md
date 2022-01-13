@@ -1,5 +1,10 @@
 # Linux Disk Usage
 
+## Overview
+
+A quick and dirty proof of concept for a Splunk alternative for WinDirStat on Linux.
+Existing tools such as QDirStat or ncdu are more fit for purpose.
+
 ## Files
 
 | File | Description |
