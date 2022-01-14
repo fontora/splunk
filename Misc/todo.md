@@ -6,3 +6,4 @@
 - Buckets
 `index=_internal | eval bkt=_bkt | stats count by bkt`
 - https://docs.splunk.com/Documentation/Splunk/8.1.2/Search/Findingandremovingoutliers
+- ui-tour.conf ([search-tour] viewed=1)
