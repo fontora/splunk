@@ -20,6 +20,7 @@
 | S2S  | Splunk to Splunk protocol |
 | SF   | Search Factor |
 | SH   | Search Head |
+| SHC  | Search Head Cluster |
 | SPL  | Search Processing Language |
 | UBA  | User Behaviour Analytics |
 | UF   | Universal Forwarder |

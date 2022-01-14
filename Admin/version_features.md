@@ -8,8 +8,9 @@
 | ------- | ----------- |
 | 8.2 | Federated Search |
 | 8.2 | Dashboard Studio built in |
-| 8.2 | KV Store backup/restore improvements |
+| 8.2 | KV Store backup/restore improvements (point in time) |
 | 8.2 | Durable search |
+| 8.2 | Configuraiton audit |
 | 8.1.1 | Rapid Diag |
 | 8.1.1 | Linux polkit rules for systemd |
 | 8.1 | Ingest-time lookups |
@@ -83,6 +84,7 @@
 | ------- | ----------- |
 | -   | Python 2.7 (it's [complicated](https://docs.splunk.com/Documentation/Splunk/latest/Python3Migration)) |
 | 8.2 | HTML dashboards |
+| 8.1 | `msearch` replaced with `mpreview` |
 | 6.0 | Light Forwarder: `SplunkLightForwarder` |
 | 5.0 | File system change monitor: `fschange` |
 

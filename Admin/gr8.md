@@ -27,5 +27,5 @@ KV_MODE        = none
 props.conf
 [your_sourcetype]
 EVENT_BREAKER_ENABLE = true
-EVENT_BREAKER        = <regex_same_as_SHOULD_LINEMERGE>
+EVENT_BREAKER        = <regex_same_as_LINE_BREAKER>
 ```

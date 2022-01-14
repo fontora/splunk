@@ -2,8 +2,8 @@
 
 | Runbook | Description |
 | ------- | ----------- |
-| [linux_facl.md](linux_facl.md) | Example file ACL for reading logs in /var/log/ |
 | [linux_rhel_auditd.md](linux_rhel_auditd.md) | How to enable reading of auditd logs |
+| [linux_rhel_facl.md](linux_rhel_facl.md) | Example file ACL for reading logs in /var/log/ |
 | [splunk_core_install.md](splunk_core_install.md) | Steps for a base install of Splunk Core |
 | [splunk_core_upgrade.md](splunk_core_upgrade.md) | Steps for an upgrade of Splunk Core |
 | [splunk_uf_install.md](splunk_uf_install.md) | Steps for installing Splunk UF |

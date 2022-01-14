@@ -54,5 +54,5 @@ index=msad sourcetype=ActiveDirectory objectCategory="CN=Person,CN=Schema,CN=Con
 | rex mode=sed field=phone "s#^\\||\\|$##"
 | rex mode=sed field=bunit "s#^\\||\\|$##"
 | table identity, prefix, nick, first, last, suffix, email, phone, managedBy, priority, bunit, category, watchlist, startDate, endDate, work_city, work_country, work_lat, work_long, cim_entity_zone
-| outputlookup override_if_empty=false org_identities_admon.csv
+| outputlookup create_empty=false createinapp=true override_if_empty=false org_identities_admon.csv
 | stats count
