@@ -1,5 +1,7 @@
 # Config Precedence
 
+- https://docs.splunk.com/Documentation/Splunk/latest/Admin/Wheretofindtheconfigurationfiles
+
 ```bash
 # egrep "conf$" /opt/splunk/etc/system/default/conf.conf
 $users-base$/$user-restriction$/*/local                = conf

@@ -5,7 +5,7 @@ For [config precedence](https://docs.splunk.com/Documentation/Splunk/latest/Admi
 - Global context: lexicographical order
 - App/User context: reverse lexicographical order
 
-Characters of note
+Characters of note (in order):
 
 - **\-** *(hyphen)*
 - **.** *(full stop)*
