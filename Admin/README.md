@@ -12,5 +12,6 @@
 | [lexicographical_order.md](lexicographical_order.md) | Lexicographical cheat sheet |
 | [linux_pretty.md](linux_pretty.md) | Some Linux treats like .bashrc/.vimrc colours, MOTD etc. |
 | [operating_systems.md](operating_systems.md) | Lists major OS versions and their support duration |
+| [search_operations_order.md](search_operations_order.md) | Search time operations order |
 | [version_features.md](version_features.md) | Added features in Splunk by version |
 | [version_support.md](version_support.md) | Lists Splunk versions and their support duration |
