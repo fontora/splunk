@@ -9,4 +9,4 @@ https://docs.splunk.com/Documentation/Splunk/latest/Knowledge/Searchtimeoperatio
 - EVAL (props.conf)
 - LOOKUP (props.conf)
 - Event types (eventtypes.conf)
-- Tags(tags.conf)
+- Tags (tags.conf)
