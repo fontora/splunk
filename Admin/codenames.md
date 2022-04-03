@@ -1,8 +1,8 @@
-# Splunk Codenames
+# Splunk Core Codenames
 
 | Version | Codename |
 | ------- | -------- |
-| 9.0 | ? |
+| 9.0 | Aurum |
 | 8.3 | Twilight |
 | 8.2 | Scootaloo |
 | 8.1 | Rarity |
