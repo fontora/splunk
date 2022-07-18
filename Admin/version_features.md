@@ -2,15 +2,52 @@
 
 ## Added
 
+### Cloud
+
+| Version | Description |
+| ------- | ----------- |
+| 8.2.2202 | ? |
+
+### Core
+
 - https://docs.splunk.com/Documentation/Splunk/latest/ReleaseNotes/
 
 | Version | Description |
 | ------- | ----------- |
+
+| 9.0 | ? |
+
+TLS - CLI
+TLS - Python
+TLS - MongoDB
+TLS - hostname validation
+UF Defaults to random password
+UF Windows managed service account and group-managed service accounts
+UF Least Privilege mode on Linux (YESSSSSSSSSSSSSSS)
+WiredTiger required.. upgrade does it for you
+UF rest port changed from 0.0.0.0:8089 to localhost:8089 
+
+ingest actions
+splunk assist
+CM reudndancy
+SmartStore support for Azure (blob storage)
+Role-based field filtering
+_configtracker index
+default tsidx changed from 2-3
+TSIDX compression for SmartStore indexes
+Bucket Merge functionality for clustered peer instances
+FS improvements (transparent mode, DMA and tstats)
+MMDB changed from MaxMind to DB-IP Lite
+API semantic versioning
+Universal forwarder: Collect MacOS Unified Logging data	
+Universal forwarder: Configuration changes are logged by default (configuration_change.log)
+
+
 | 8.2 | Federated Search |
 | 8.2 | Dashboard Studio built in |
 | 8.2 | KV Store backup/restore improvements (point in time) |
 | 8.2 | Durable search |
-| 8.2 | Configuraiton audit |
+| 8.2 | Configuration audit |
 | 8.1.1 | Rapid Diag |
 | 8.1.1 | Linux polkit rules for systemd |
 | 8.1 | Ingest-time lookups |
@@ -37,6 +74,9 @@
 | 7.2 | Docker support |
 | 7.2 | Dashboard dark theme |
 | 7.2 | Customizable admin user name |
+
+| 7.2 | splunk.secret change                xxxxxxxxxxxxxxxxxx .. also datexml issues XXXXXXXXXXXXX jquery 3.5?
+
 | 7.1 | Splunk Web user interface update |
 | 7.1 | Upgrades to internal Splunk password capabilities (admin user must have non default password) |
 | 7.1 | Parallel reduce search processing (new command: `redistribute`) |
@@ -52,7 +92,7 @@
 | 6.6 | Search Head Clustering user interface |
 | 6.6 | Volume-based data forwarding |
 | 6.6 | Change in default time range for Search (24h from all of time) |
-| 6.5 | Datsets |
+| 6.5 | Datasets |
 | 6.5 | Search syntax highlight, auto formatting and command completion |
 | 6.5 | Edit XML inline and preview |
 | 6.5 | Machine Learning Tool Kit |

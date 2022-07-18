@@ -1,0 +1,116 @@
+https://community.splunk.com/t5/Getting-Data-In/How-to-get-a-list-of-all-hosts-installed-with-Universal/m-p/288498
+
+# Show UFs without DS
+
+index="_internal" source="*metrics.log" group="tcpin_connections" 
+| stats latest(_time) as lastSeen by hostname, sourceIp, os, arch, connectionType, fwdType, version, guid 
+| eval fwdType=case(
+    fwdType=="uf", "UF",
+    fwdType=="lwf", "LWF",
+    fwdType=="full", "HF",
+    connectionType=="cooked" or connectionType=="cookedSSL", "Intermediate Forwarder",
+    connectionType=="raw" or connectionType=="rawSSL", "Legacy Forwarder") 
+| table lastSeen, hostname, sourceIp, os, arch, fwdType, version, guid 
+| eval lastSeen=strftime(lastSeen, "%F %T") 
+
+| rename lastSeen as "Last Seen", hostname as "Hostname", sourceIp as "Source IP", os as "OS", arch as "CPU Type", fwdType as "Splunk Type", version as "Version", guid as "GUID"
+
+
+
+
+merge issues:
+source = /opt/splunk/var/log/splunk/entity_merge.logs
+sourcetype = identity_correlation:merge
+
+
+| `identities`
+| `assets`
+
+
+
+## List of apps for ES, excluding splunk default ones
+| rest splunk_server=local /services/apps/local 
+| fields label, description, title disabled, update.version, version 
+| search NOT title IN ("100-*", "*-AccessProtection", "*-AuditAndDataProtection", "*-EndpointProtection", "*-IdentityManagement", "*-NetworkProtection", "*-ThreatIntelligence", "splunkclouduf", "tos", "cloud_administration", "dynamic-data-self-storage-app", "launcher", "learned", "legacy", "prometheus", "sample_app", "splunk_gdi", "splunk_httpinput", "splunk_instance_monitoring", "splunk_instrumentation", "splunk_internal_metrics", "splunk_metrics_workspace") NOT version="8.0.2004.1"
+
+
+
+| tstats summariesonly=true values(IDS_Attacks.tag) as "tag",dc(IDS_Attacks.dest) as "count" from datamodel="Intrusion_Detection"."IDS_Attacks" by "IDS_Attacks.src" | rename "IDS_Attacks.src" as "src" | where 'count'>5
+
+
+| `drop_dm_object_name("IDS_Attacks")` 
+
+
+\
+
+
+
+
+
+
+## ITSI
+
+| rest /servicesNS/nobody/SA-ITOA/itoa_interface/entity report_as=text 
+| spath input=value
+| rename {}._key AS key, {}.entity_type{} AS entity_type, {}.sai_entity_key{} AS sai_entity_key, {}title AS title
+| eval x = mvzip(mvzip(mvzip(key,entity_type), sai_entity_key), title)
+| mvexpand x 
+| eval x = split(x,",") 
+| eval key=mvindex(x,0) 
+| eval entity_type=mvindex(x,1) 
+| eval sai_entity_key=mvindex(x,2) 
+| eval title=mvindex(x,3) 
+| table key, entity_type, sai_entity_key, title
+
+
+| rest "/services/event_management_interface/correlation_search" report_as=text 
+| spath input=value 
+| fields - value 
+| eval x = mvzip('{}.disabled','{}.name') | table x
+
+
+
+
+
+
+[tcpout]
+defaultGroup = central_indexers
+indexAndForward = true
+
+[indexAndForward]
+index = true
+
+[tcpout:dsoc_indexers]
+server = idx01.domain.com:9997,idx02.domain.com:9997,.....
+compressed = true
+sslCertPath = $SPLUNK_HOME/etc/apps/custom_ssl/local/cert.pem
+sslRootCAPath = $SPLUNK_HOME/etc/apps/custom_ssl/local/cacert.pem
+sslPassword = XXXXXXXXXX
+sslCommonNameToCheck = *.domain.com
+sslVerifyServerCert = true
+useClientSSLCompression = true
+dropEventsOnQueueFull = 0
+
+## HF
+props.conf
+[sourcetypeX]
+TRANSFORMS-orig_env = orig_env
+
+transforms.conf
+[orig_env]
+FORMAT = orig_env::"customer1_site2"
+WRITE_META = true
+
+## SH
+fields.conf
+[orig_env]
+INDEXED = true
+
+
+
+
+
+
+##################### LAB 
+
+letsencrypt certonly --standalone -d splunk-es.fontora.dev

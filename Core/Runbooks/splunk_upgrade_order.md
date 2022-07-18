@@ -3,8 +3,8 @@
 - https://docs.splunk.com/images/d/d3/Splunk_upgrade_order_of_ops.pdf
 
 1. Deployment Server
-2. License Master
-3. Cluster Master
+2. License Manager
+3. Cluster Manager
 4. Monitoring Console
 5. Deployer
 6. Search Heads (inc. SHC)

@@ -3,7 +3,7 @@
 | Acronym | Description |
 | ------- | ----------- |
 | AIO  | All-in-one |
-| CM   | Cluster Master |
+| CM   | Cluster Manager |
 | DSP  | Data Stream Processor |
 | ES   | Enterprise Security |
 | FS   | Federate Search |
@@ -13,6 +13,7 @@
 | IHF  | Intermediate Heavy Forwarder |
 | IUF  | Intermediate Universal Forwarder |
 | ITSI | IT Service Intelligence |
+| LM   | License Manager |
 | MC   | Monitoring Console |
 | RF   | Replication Factor |
 | SC   | Splunk Cloud |

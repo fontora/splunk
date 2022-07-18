@@ -1,10 +1,5 @@
 | tstats count from datamodel=<datamodelname> by index
 
-
-
-
-
-
 index=main objectCategory="CN=Person*"
 | dedup distinguishedName
 | rename distinguishedName as id, givenName as first, sn as last, department as bunit, mail as email
@@ -17,12 +12,4 @@ index=main objectCategory="CN=Person*"
 | eval endDate = strftime(endDateEpoch, "%m/%d/%y %H:%M")
 | table identity,prefix,nick,first,last,suffix,email,phone,phone2,managedBy,priority,bunit,category,watchlist,startDate,endDate,work_city,work_country,work_lat,work_long
 
-
-
  | outputlookup create_empty=false createinapp=true override_if_empty=false <descriptive filename>.csv
- 
- 
-Python for Scientific Computing (for Linux 64-bit)
-Splunk Machine Learning Toolkit
-
-MLTK app version 5.1.0 is now included in the ES installer. The previously generated models from MLTK 5.0 are compatible as-is. The previously generated models MLTK 4.x are not compatible and have to be regenerated. See Machine Learning Toolkit Overview in Splunk Enterprise Security for general information about models in MLTK 5.1.0.
