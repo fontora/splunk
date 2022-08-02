@@ -37,7 +37,7 @@ Major considerations for older UFs:
 | Windows 7 | 6.4.11 |
 | Windows Vista | 6.1.11 |
 | Windows XP | 6.1.11 |
-| | |
+| | |               ?????????????????????????
 | Windows Server 2019 | 8.2.x |
 | Windows Server 2016 | 8.2.x |
 | Windows Server 2012 R2 | 8.2.x |
