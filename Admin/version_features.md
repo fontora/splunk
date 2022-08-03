@@ -4,9 +4,7 @@
 
 ### Cloud
 
-| Version | Description |
-| ------- | ----------- |
-| 8.2.2202 | ? |
+TBA
 
 ### Core
 
@@ -15,39 +13,33 @@
 | Version | Description |
 | ------- | ----------- |
 
-| 9.0 | ? |
+https://docs.splunk.com/Documentation/Splunk/9.0.0/Indexer/Updatepeerconfigurations#On_the_manager_node
 
-TLS - CLI
-TLS - Python
-TLS - MongoDB
-TLS - hostname validation
-UF Defaults to random password
-UF Windows managed service account and group-managed service accounts
-UF Least Privilege mode on Linux (YESSSSSSSSSSSSSSS)
-WiredTiger required.. upgrade does it for you
-UF rest port changed from 0.0.0.0:8089 to localhost:8089 
-
-ingest actions
-splunk assist
-CM reudndancy
-SmartStore support for Azure (blob storage)
-Role-based field filtering
-_configtracker index
-default tsidx changed from 2-3
-TSIDX compression for SmartStore indexes
-Bucket Merge functionality for clustered peer instances
-FS improvements (transparent mode, DMA and tstats)
-MMDB changed from MaxMind to DB-IP Lite
-API semantic versioning
-Universal forwarder: Collect MacOS Unified Logging data	
-Universal forwarder: Configuration changes are logged by default (configuration_change.log)
-
-
+| 9.0 | TLS warnings if not enabled for: CLI, Python, MongoDB, Hostname validation |
+| 9.0 | UF Defaults to random password |
+| 9.0 | UF Windows managed service account and group-managed service accounts |
+| 9.0 | UF Least Privilege mode on Linux |
+| 9.0 | KV Store requires WiredTiger (upgrade migrates automatically) |
+| 9.0 | UF rest port changed from 0.0.0.0:8089 to localhost:8089 |
+| 9.0 | Ingest Actions |
+| 9.0 | Splunk Assist |
+| 9.0 | CM Redundancy |
+| 9.0 | SmartStore support for Azure (blob storage) |
+| 9.0 | Role-based field filtering |
+| 9.0 | _configtracker index |
+| 9.0 | Default tsidxWritingLevel changed from 2-3 |
+| 9.0 | TSIDX compression for SmartStore indexes |
+| 9.0 | FS improvements (transparent mode, DMA and tstats) |
+| 9.0 | MMDB changed from MaxMind to DB-IP Lite |
+| 9.0 | API semantic versioning |
+| 9.0 | Universal forwarder: Collect MacOS Unified Logging data	|
+| 9.0 | Universal forwarder: Configuration changes are logged by default (configuration_change.log) |
 | 8.2 | Federated Search |
 | 8.2 | Dashboard Studio built in |
 | 8.2 | KV Store backup/restore improvements (point in time) |
 | 8.2 | Durable search |
 | 8.2 | Configuration audit |
+| 8.2 | jQuery 3.5 upgrade (https://docs.splunk.com/Documentation/UpgradejQuery/) |
 | 8.1.1 | Rapid Diag |
 | 8.1.1 | Linux polkit rules for systemd |
 | 8.1 | Ingest-time lookups |
@@ -57,6 +49,7 @@ Universal forwarder: Configuration changes are logged by default (configuration_
 | 8.1 | UF HTTP Out |
 | 8.1 | Conditional license enforcement |
 | 8.1 | SPL comments: \`\`\`this is a comment\`\`\` |
+| 8.1 | datetime.xml issue resolved (https://docs.splunk.com/Documentation/Splunk/latest/Data/Configuredatetimexml) |
 | 8.0.5 | New command: `require` |
 | 8.0 | Python 3.7 support |
 | 8.0 | Analytics Workspace |
@@ -74,9 +67,7 @@ Universal forwarder: Configuration changes are logged by default (configuration_
 | 7.2 | Docker support |
 | 7.2 | Dashboard dark theme |
 | 7.2 | Customizable admin user name |
-
-| 7.2 | splunk.secret change                xxxxxxxxxxxxxxxxxx .. also datexml issues XXXXXXXXXXXXX jquery 3.5?
-
+| 7.2 | splunk.secret change (from "RC4" $1$ to "AES256-GCM" $7$)
 | 7.1 | Splunk Web user interface update |
 | 7.1 | Upgrades to internal Splunk password capabilities (admin user must have non default password) |
 | 7.1 | Parallel reduce search processing (new command: `redistribute`) |
@@ -114,6 +105,7 @@ Universal forwarder: Configuration changes are logged by default (configuration_
 
 | Removed Version | Deprecated Version | Description |
 | --------------- | ------------------ | ----------- |
+| 9.0 | 7.3 | Linux kernel 2.6 |
 | 8.0 | 6.4 | Splunk Web legacy mode |
 | 8.0 | 6.3 | Advanced XML |
 | 8.0 | 6.2 | Search Head pooling |
@@ -122,7 +114,9 @@ Universal forwarder: Configuration changes are logged by default (configuration_
 
 | Version | Description |
 | ------- | ----------- |
-| -   | Python 2.7 (it's [complicated](https://docs.splunk.com/Documentation/Splunk/latest/Python3Migration)) |
+| 9.0 | Python 2 |
+| 9.0 | S2S protocol v3, Forwarders 5.x and lower are affected |
+| 9.0 | master-apps directory, now called manager-apps |
 | 8.2 | HTML dashboards |
 | 8.1 | `msearch` replaced with `mpreview` |
 | 6.0 | Light Forwarder: `SplunkLightForwarder` |
