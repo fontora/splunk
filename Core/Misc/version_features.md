@@ -12,9 +12,6 @@ TBA
 
 | Version | Description |
 | ------- | ----------- |
-
-https://docs.splunk.com/Documentation/Splunk/9.0.0/Indexer/Updatepeerconfigurations#On_the_manager_node
-
 | 9.0 | TLS warnings if not enabled for: CLI, Python, MongoDB, Hostname validation |
 | 9.0 | UF Defaults to random password |
 | 9.0 | UF Windows managed service account and group-managed service accounts |
