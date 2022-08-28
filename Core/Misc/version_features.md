@@ -31,12 +31,13 @@ TBA
 | 9.0 | API semantic versioning |
 | 9.0 | Universal forwarder: Collect MacOS Unified Logging data	|
 | 9.0 | Universal forwarder: Configuration changes are logged by default (configuration_change.log) |
+| 8.2.5 | HEC multithreaded |
 | 8.2 | Federated Search |
 | 8.2 | Dashboard Studio built in |
 | 8.2 | KV Store backup/restore improvements (point in time) |
 | 8.2 | Durable search |
 | 8.2 | Configuration audit |
-| 8.2 | jQuery 3.5 upgrade (https://docs.splunk.com/Documentation/UpgradejQuery/) |
+| 8.2 | jQuery 3.5 upgrade |
 | 8.1.1 | Rapid Diag |
 | 8.1.1 | Linux polkit rules for systemd |
 | 8.1 | Ingest-time lookups |
@@ -46,7 +47,7 @@ TBA
 | 8.1 | UF HTTP Out |
 | 8.1 | Conditional license enforcement |
 | 8.1 | SPL comments: \`\`\`this is a comment\`\`\` |
-| 8.1 | datetime.xml issue resolved (https://docs.splunk.com/Documentation/Splunk/latest/Data/Configuredatetimexml) |
+| 8.1 | datetime.xml issue resolved |
 | 8.0.5 | New command: `require` |
 | 8.0 | Python 3.7 support |
 | 8.0 | Analytics Workspace |
