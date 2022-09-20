@@ -1,23 +1,26 @@
 # Splunk Core - Install
 
-- Date: 2021.10.04
-- Splunk Core: v8.2.2.1
+- Date: 2022.09.20
+- Splunk Core: v9.0.1
 - OS: RHEL 7 & 8, CentOS 7 & 8, Rocky 8, Ubuntu 16/18/20 LTS, AWS Linux 2
 
 ## Base install
 
 ```bash
-# Download the Splunk Core 9.0.0
-wget -O splunk-9.0.0-6818ac46f2ec-Linux-x86_64.tgz "https://download.splunk.com/products/splunk/releases/9.0.0/linux/splunk-9.0.0-6818ac46f2ec-Linux-x86_64.tgz"
+# Install required packages
+dnf install wget
+
+# Download the Splunk Core 9.0.1
+wget -O splunk-9.0.1-82c987350fde-Linux-x86_64.tgz "https://download.splunk.com/products/splunk/releases/9.0.1/linux/splunk-9.0.1-82c987350fde-Linux-x86_64.tgz"
 
 # Download the MD5 hash
-wget -O splunk-9.0.0-6818ac46f2ec-Linux-x86_64.tgz.md5 'https://download.splunk.com/products/splunk/releases/9.0.0/linux/splunk-9.0.0-6818ac46f2ec-Linux-x86_64.tgz.md5'
+wget -O splunk-9.0.1-82c987350fde-Linux-x86_64.tgz.md5 'https://download.splunk.com/products/splunk/releases/9.0.1/linux/splunk-9.0.1-82c987350fde-Linux-x86_64.tgz.md5'
 
 # Check the MD5 hash
-md5sum -c splunk-9.0.0-6818ac46f2ec-Linux-x86_64.tgz.md5
+md5sum -c splunk-9.0.1-82c987350fde-Linux-x86_64.tgz.md5
 
 # Extract Splunk
-sudo tar -zxvf splunk-9.0.0-6818ac46f2ec-Linux-x86_64.tgz -C /opt/
+sudo tar -zxvf splunk-9.0.1-82c987350fde-Linux-x86_64.tgz -C /opt/
 
 # Add a splunk user
 sudo useradd splunk
@@ -37,7 +40,7 @@ EOL
 sudo /opt/splunk/bin/splunk enable boot-start -user splunk --accept-license -systemd-managed 1
 
 # Update ulimits in unit file
-sudo sed -i 's/^LimitNOFILE=65536/LimitCORE=0\nLimitFSIZE=infinity\nLimitNOFILE=65536\nLimitNPROC=20480\nLimitDATA=infinity/' /etc/systemd/system/Splunkd.service
+sudo sed -i 's#^LimitNOFILE=65536#LimitNOFILE=65536\nLimitNPROC=20480#' /etc/systemd/system/Splunkd.service
 
 # Add an alias of 'splunk.service', no one likes capitals in Linux
 sudo sed -i '/^\[Install\]/a Alias=splunk.service' /etc/systemd/system/Splunkd.service
