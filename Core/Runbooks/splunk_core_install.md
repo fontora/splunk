@@ -2,7 +2,7 @@
 
 - Date: 2022.09.20
 - Splunk Core: v9.0.1
-- OS: RHEL 7 & 8, CentOS 7 & 8, Rocky 8, Ubuntu 16/18/20 LTS, AWS Linux 2
+- OS: RHEL 7 & 8, CentOS 7 & 8, Rocky 8, Ubuntu 18/20/22 LTS, AWS Linux 2
 
 ## Base install
 
