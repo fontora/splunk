@@ -12,6 +12,7 @@ TBA
 
 | Version | Description |
 | ------- | ----------- |
+| 9.0 | Bloomfilters for TSIDX (make this fast: "| tstats count WHERE index=* earliest=0 latest=now TERM(1.2.3.4) BY _time") |
 | 9.0 | TLS warnings if not enabled for: CLI, Python, MongoDB, Hostname validation |
 | 9.0 | UF Defaults to random password |
 | 9.0 | UF Windows managed service account and group-managed service accounts |
@@ -48,6 +49,7 @@ TBA
 | 8.1 | Conditional license enforcement |
 | 8.1 | SPL comments: \`\`\`this is a comment\`\`\` |
 | 8.1 | datetime.xml issue resolved |
+| 8.1 | tsidxWritingLevel=4 added |
 | 8.0.5 | New command: `require` |
 | 8.0 | Python 3.7 support |
 | 8.0 | Analytics Workspace |
@@ -58,7 +60,10 @@ TBA
 | 7.4 | Metrics rollups |
 | 7.3 | Splunk Metrics Workspace in splunk |
 | 7.3 | New command: `walklex` |
-| 7.2 | workload management |
+| 7.3 | tsidxWritingLevel=3 added |
+| 7.2 | tsidxWritingLevel=2 added |
+| 7.2 | journalCompression=zstd added |
+| 7.2 | Workload Management |
 | 7.2 | SmartStore |
 | 7.2 | Ingest logs as metrics |
 | 7.2 | Ingest-time eval-style extractions |
@@ -88,16 +93,17 @@ TBA
 | 6.5 | Hadoop Dataroll |
 | 6.5 | Health Checks |
 | 6.5 | Data rebalancing |
-| 6.5 | UF: EVENT_BRKEAER |
+| 6.5 | UF: EVENT_BREAKER |
 | 6.4 | Data sampling |
 | 6.4 | TSIDX reduction |
 | 6.4 | Authentication: SAML, Okta, Azure, ADFS |
-| 6.3 | Multiple pipelines
+| 6.3 | Multiple pipelines |
 | 6.3 | Index and search improvements ~2x |
 | 6.3 | Monitoring Console |
 | 6.3 | Data Integrity |
 | 6.3 | HTTP Event Collector |
 | 6.2 | UI field extractor |
+| 6.2 | KV Store added |
 
 ## Removed
 

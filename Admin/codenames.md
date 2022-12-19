@@ -2,6 +2,7 @@
 
 | Version | Codename |
 | ------- | -------- |
+| 9.1 | Beryllium |
 | 9.0 | Aurum |
 | 8.3 | Twilight |
 | 8.2 | Scootaloo |
@@ -10,3 +11,16 @@
 | 7.3 | Pinkie Pie |
 | 7.2 | Orange Swirl |
 | 7.1 | Night Light |
+| 7.0 | Minty |
+| 6.7 | Kimono |
+| 6.6 | JackHammer |
+| 6.5 | Ivory |
+| 6.4 | Galaxy |
+| 6.3 | Ember |
+| 6.2 | Dash |
+| 6.1 | Cupcake |
+| 6.0 | Bubbles |
+| 5.0 | Ace |
+| 4.4 | Hammer |
+| 4.3 | Bieber |
+| 4.? | Madonna |
