@@ -1,3 +1,5 @@
+agent_config.yaml
+
 ##########
 ## DOCS ##
 ##########
@@ -79,8 +81,7 @@ processors:
 exporters:
   # https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/exporter/splunkhecexporter
   splunk_hec:
-    #token: "d06bc646-48fc-4bee-b749-695214d0c265"
-    token: "2d473894-d196-44ba-bd32-f40ff8facd0e"
+    token: "XXX"
     endpoint: "https://localhost:8088/services/collector"
     source: "otel"
     sourcetype: "otel"
