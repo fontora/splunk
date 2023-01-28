@@ -12,8 +12,7 @@
 | 7.2 | Orange Swirl |
 | 7.1 | Night Light |
 | 7.0 | Minty |
-| 6.7 | Kimono |
-| 6.6 | JackHammer |
+| 6.6 | Kimono |
 | 6.5 | Ivory |
 | 6.4 | Galaxy |
 | 6.3 | Ember |
@@ -21,6 +20,8 @@
 | 6.1 | Cupcake |
 | 6.0 | Bubbles |
 | 5.0 | Ace |
-| 4.4 | Hammer |
+| 4.4 | ? |
 | 4.3 | Bieber |
-| 4.? | Madonna |
+| 4.2 | Hammer |
+| 4.0 | Madonna |
+| 3.3 | Britney |

@@ -1,7 +1,7 @@
 # Splunk Core - Install
 
-- Date: 2022.09.20
-- Splunk Core: v9.0.1
+- Date: 2023.01.13
+- Splunk Core: v9.0.3
 - OS: RHEL 7 & 8, CentOS 7 & 8, Rocky 8, Ubuntu 18/20/22 LTS, AWS Linux 2
 
 ## Base install
@@ -10,17 +10,17 @@
 # Install required packages
 dnf install wget
 
-# Download the Splunk Core 9.0.1
-wget -O splunk-9.0.1-82c987350fde-Linux-x86_64.tgz "https://download.splunk.com/products/splunk/releases/9.0.1/linux/splunk-9.0.1-82c987350fde-Linux-x86_64.tgz"
+# Download the Splunk Core 9.0.3
+wget -O splunk-9.0.3-dd0128b1f8cd-Linux-x86_64.tgz "https://download.splunk.com/products/splunk/releases/9.0.3/linux/splunk-9.0.3-dd0128b1f8cd-Linux-x86_64.tgz"
 
 # Download the MD5 hash
-wget -O splunk-9.0.1-82c987350fde-Linux-x86_64.tgz.md5 'https://download.splunk.com/products/splunk/releases/9.0.1/linux/splunk-9.0.1-82c987350fde-Linux-x86_64.tgz.md5'
+wget -O splunk-9.0.3-dd0128b1f8cd-Linux-x86_64.tgz.md5 'https://download.splunk.com/products/splunk/releases/9.0.3/linux/splunk-9.0.3-dd0128b1f8cd-Linux-x86_64.tgz.md5'
 
 # Check the MD5 hash
-md5sum -c splunk-9.0.1-82c987350fde-Linux-x86_64.tgz.md5
+md5sum -c splunk-9.0.3-dd0128b1f8cd-Linux-x86_64.tgz.md5
 
 # Extract Splunk
-sudo tar -zxvf splunk-9.0.1-82c987350fde-Linux-x86_64.tgz -C /opt/
+sudo tar -zxvf splunk-9.0.3-dd0128b1f8cd-Linux-x86_64.tgz -C /opt/
 
 # Add a splunk user
 sudo useradd splunk

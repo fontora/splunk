@@ -2,6 +2,8 @@
 
 ## Added
 
+READ THIS AND UPDATE THE TABLE: https://medium.com/keylogged/from-splunk-5-x-to-7-0-just-what-have-you-been-missing-out-on-48d37065d60e
+
 ### Cloud
 
 TBA
@@ -104,6 +106,8 @@ TBA
 | 6.3 | HTTP Event Collector |
 | 6.2 | UI field extractor |
 | 6.2 | KV Store added |
+| 4.3 | Bloom filters added |
+| 4.2 | UF added |
 
 ## Removed
 

@@ -7,17 +7,20 @@
 ## Base install
 
 ```bash
-# Download Splunk Core 8.2.1
-wget -O splunkforwarder-8.2.2.1-ae6821b7c64b-Linux-x86_64.tgz 'https://d7wz6hmoaavd0.cloudfront.net/products/universalforwarder/releases/8.2.2.1/linux/splunkforwarder-8.2.2.1-ae6821b7c64b-Linux-x86_64.tgz'
+# Ensure wget is installed
+sudo dnf install -y wget
+
+# Download Splunk Core 8.2.9
+wget -O splunkforwarder-8.2.9-4a20fb65aa78-Linux-x86_64.tgz "https://download.splunk.com/products/universalforwarder/releases/8.2.9/linux/splunkforwarder-8.2.9-4a20fb65aa78-Linux-x86_64.tgz"
 
 # Download the MD5 hash
-wget -O splunkforwarder-8.2.2.1-ae6821b7c64b-Linux-x86_64.tgz.md5 'https://d7wz6hmoaavd0.cloudfront.net/products/universalforwarder/releases/8.2.2.1/linux/splunkforwarder-8.2.2.1-ae6821b7c64b-Linux-x86_64.tgz.md5'
+wget -O splunkforwarder-8.2.9-4a20fb65aa78-Linux-x86_64.tgz.md5 "https://download.splunk.com/products/universalforwarder/releases/8.2.9/linux/splunkforwarder-8.2.9-4a20fb65aa78-Linux-x86_64.tgz.md5"
 
 # Check the MD5 hash 
-md5sum -c splunkforwarder-8.2.2.1-ae6821b7c64b-Linux-x86_64.tgz.md5
+md5sum -c splunkforwarder-8.2.9-4a20fb65aa78-Linux-x86_64.tgz.md5
 
 # Extract Splunk
-sudo tar -zxvf splunkforwarder-8.2.2.1-ae6821b7c64b-Linux-x86_64.tgz -C /opt/
+sudo tar -zxvf splunkforwarder-8.2.9-4a20fb65aa78-Linux-x86_64.tgz -C /opt/
 
 # Add a splunk user
 sudo useradd splunk

@@ -8,6 +8,7 @@ ES and ITSI support is tied to the Splunk version running: https://docs.splunk.c
 
 | Version | Released | End of Support | Criteria |
 | ------- | -------- | -------------- | -------- |
+| 9.0 | 2022.06.14 | 2024.06.14 | 24 Months   |
 | 8.2 | 2021.05.12 | 2023.05.12 | 24 Months   |
 | 8.1 | 2020.10.19 | 2023.04.19 | 24 Months * |
 | 8.0 | 2019.10.22 | 2021.10.22 | 24 Months   |

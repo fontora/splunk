@@ -9,24 +9,23 @@ https://docs.splunk.com/Documentation/Splunk/latest/Installation/StartSplunkfort
 https://docs.splunk.com/Documentation/Splunk/latest/Security/Secureyouradminaccount
 https://docs.splunk.com/Documentation/Forwarder/9.0.0/Forwarder/Installanixuniversalforwarder
 
-
 ## Base install
 
 ```bash
 # Ensure wget is installed
 sudo dnf install -y wget
 
-# Download UF 9.0.1
-wget -O splunkforwarder-9.0.1-82c987350fde-Linux-x86_64.tgz "https://download.splunk.com/products/universalforwarder/releases/9.0.1/linux/splunkforwarder-9.0.1-82c987350fde-Linux-x86_64.tgz"
+# Download UF 9.0.3
+wget -O splunkforwarder-9.0.3-dd0128b1f8cd-Linux-x86_64.tgz "https://download.splunk.com/products/universalforwarder/releases/9.0.3/linux/splunkforwarder-9.0.3-dd0128b1f8cd-Linux-x86_64.tgz"
 
 # Download the MD5 hash
-wget -O splunkforwarder-9.0.1-82c987350fde-Linux-x86_64.tgz.md5 'https://download.splunk.com/products/universalforwarder/releases/9.0.1/linux/splunkforwarder-9.0.1-82c987350fde-Linux-x86_64.tgz.md5'
+wget -O splunkforwarder-9.0.3-dd0128b1f8cd-Linux-x86_64.tgz.md5 "https://download.splunk.com/products/universalforwarder/releases/9.0.3/linux/splunkforwarder-9.0.3-dd0128b1f8cd-Linux-x86_64.tgz.md5"
 
 # Check the MD5 hash 
-md5sum -c splunkforwarder-9.0.1-82c987350fde-Linux-x86_64.tgz.md5
+md5sum -c splunkforwarder-9.0.3-dd0128b1f8cd-Linux-x86_64.tgz.md5
 
 # Extract Splunk
-sudo tar -zxvf splunkforwarder-9.0.1-82c987350fde-Linux-x86_64.tgz  -C /opt/
+sudo tar -zxvf splunkforwarder-9.0.3-dd0128b1f8cd-Linux-x86_64.tgz -C /opt/
 
 # Add a splunk user
 sudo useradd -m splunk
