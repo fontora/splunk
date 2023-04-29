@@ -1,0 +1,579 @@
+@startuml masa
+!theme reddress-lightgreen
+skinparam linetype polyline
+'skinparam linetype ortho
+
+'Universal forwarder diagram
+title "Splunk Universal Forwarder to Splunk Enterprise Indexer (v9.0)"
+frame "Splunk Universal Forwarder" {
+    ' The dashed outlines here are to help group the parts by their configuration
+    rectangle "Input" as ufI #transparent;line:gray;line.dashed {
+
+        'Monitor/tailreaders
+        frame batch {
+            agent "BatchReader" as br
+        }
+        queue "aeq/aq" as aq
+        frame tail {
+            agent "TailReader (tailing)" as tailR
+            hexagon "file larger than\n""min_batch_size_byte""\nin limits.conf" as tailRsize
+            tailR --> tailRsize
+            tailRsize --> br : yes
+            tailRsize --> aq : no
+        }
+        frame archivepipe {
+            agent archiveProcessor as ap
+        }
+        aq --> ap
+
+        'Exec/modinput
+        queue persistentQueue as execPq
+        note top
+            WinEventLog, Perfmon, 
+            Regmon, Admon, Print, 
+            Introspection, etc.
+        end note
+        frame "exec\l(script, modinput}" {
+            agent exec 
+        }
+        execPq --> exec
+
+        'UDP network
+        queue persistentQueue as udpPq
+        queue udp_queue
+        frame udp {
+            agent udp as udpa
+        }
+        udpPq --> udp_queue
+        udp_queue --> udpa
+
+        'TCP network
+        queue persistentQueue as tcpPq
+        queue tcp_queue
+        frame tcp {
+            agent tcp as tcpa
+        }
+        tcpPq --> tcp_queue
+        tcp_queue --> tcpa
+
+        'FSChange, still exists, still in use
+        frame fschange {
+            agent fschangemanager as fschangea
+        }
+        note top
+                Deprecated in v5.0
+        end note
+
+        'AuditTrail stuff. This is kind of oddly defined in the original diagram
+        agent "AuditTrailManager\n(audittrail events)" as atma
+        
+    }
+
+    'Config for input layer. Should this be broken up into notes on the individual inputs?
+    note left of ufI
+        == Configuration
+        === inputs.conf
+        === props.conf
+        * ""CHARTSET""
+        * ""NO_BINARY_CHECK""
+        * ""CHECK_METHOD"" & ""initCrcLength"" (inputs.conf)
+        * ""CHECK_FOR_HEADER"" (deprecated in v5.0)
+        * ""INDEXED_EXTRACTIONS"" (v6.0)
+        * ""EVENT_BREAKER_ENABLE"" (v6.5)
+        * ""force_local_processing"" (v6.6)
+        === transforms.conf (when using structureparsing)
+    end note
+    
+    'Parsing dashed rectangle to group things together for the config note
+    rectangle "Parsing" as ufP #transparent;line:gray;line.dashed {
+        
+
+        'Interface here is used to avoid notes on lines
+        'WinParsing stuff
+        interface "WMI events" as ufWMI
+        queue WinParsingQueue as ufWpq
+        frame winparsing {
+            agent utf8 as ufWinUtf8
+            agent linebreaker as ufWinLb
+            agent header as ufWinHeader
+            agent aggregator as ufWinAgg
+            'Connect the stuff in this group
+            exec --> ufWMI
+            ufWpq --> ufWinUtf8
+            ufWMI --> ufWpq
+            ufWinUtf8 --> ufWinLb
+            ufWinLb --> ufWinHeader
+            ufWinHeader --> ufWinAgg
+        }
+
+        'Interface here to avoid a lot of notes on lines
+        'Structured data
+        interface "structured data" as structD
+        queue "structuredparsing Queue" as structP
+        structD --> structP
+        note right
+            v6.0: Header Extractions
+            v6.6: ""force_local_processing""
+        end note
+        frame structuredparsing {
+            agent utf8 as ufSPUtf8
+            agent linebreaker as ufSPLb
+            agent metrics as ufSPMetrics
+            note right
+                v7.0
+            end note
+            agent aggregator as ufSPAgg
+            agent regexreplacement as ufSPRegex
+            agent metricschema as ufSPMetricSchema
+            note right
+                v7.2.4
+            end note
+            'Connect the stuff in this group
+            structP --> ufSPUtf8
+            ufSPUtf8 --> ufSPLb
+            ufSPLb --> ufSPMetrics
+            ufSPMetrics --> ufSPAgg
+            ufSPAgg --> ufSPRegex
+            ufSPRegex --> ufSPMetricSchema
+        }
+        'Dashed lines to represent connections to structured parsing for Indexed Extractions
+        tailR -[dashed]-> structD
+        ap -[dashed]-> structD
+        exec -[dashed]-> structD
+        udp -[dashed]-> structD
+        tcp -[dashed]-> structD
+
+        'Parsing queue
+        queue parsingQueue as pq
+        frame Parsing {
+            agent utf8 as ufUtf8
+            agent chunkedlinebreaker as ufChunkedlinebreaker
+            note right
+                v6.5
+            end note
+            agent thruput as ufThruput
+            agent "tcp-output-light-forwarder" as ufTCPfwd
+            'Connect the stuff in this group
+            pq --> ufUtf8
+            ufUtf8 --> ufChunkedlinebreaker
+            ufChunkedlinebreaker --> ufThruput
+            ufThruput --> ufTCPfwd
+        }
+
+        'Connect the different pipelines together to the parsing queue
+        br --> pq
+        ap --> pq
+        exec --> pq
+        udp --> pq
+        tcp --> pq
+        fschangea --> pq
+        atma --> pq
+        ufWinAgg --> pq
+        ufSPMetricSchema --> pq
+        
+        'Nullqueue is kinda floating by itself, but it seems like it should be grouped somewhere
+        queue nullQueue
+        frame nullQueue as nullQueueFrame {
+            agent nullQueue as nullQueueAgent
+        }
+        interface "/dev/null" as UFdevnull
+        nullQueue --> nullQueueAgent
+        nullQueueAgent --> UFdevnull
+
+        'The newer HTTP out stuff, most likely more detail is needed here
+        queue S2SOverHttp as ufS2Sq
+        queue "tcpout_queue (per group)" as ufTcpOut
+        note right
+            v8.1
+        end note
+
+        'Connect the output from parsing to the sending queues
+        ufTCPfwd --> ufTcpOut
+        ufTCPfwd --> ufS2Sq
+
+    }
+    'Configuration notes for parsing on the UF
+    note left of ufP
+        == Configuration
+        === outputs.conf
+        * ""forwardedindex.""
+        * ""useACK""
+        * ""forceTimeBasedAutoLB (v5.0)""
+        * ""indexerDiscovery (v6.3)""
+        === limits.conf
+        * ""maxKBps""
+    end note
+}
+
+'The network transport and then connecting the outputs from the UF to it
+cloud "Network/LAN/WAN" as network
+ufTcpOut --> network : S2S
+ufS2Sq --> network : S2SOverHttp
+
+'The indexer
+frame "Splunk Enterprise Indexer" {
+    
+    'Grouping together input types of things
+    rectangle "Input" as idxIn #transparent;line:gray;line.dashed {
+        'Set up our input layer
+        'Note that right now we just have the things from forwarders, not the
+        'other types of inputs that are completely valid on an indexer
+        
+        'fwd S2S input
+        queue "persistentQueue" as idxInPq
+        queue "tcpin_cooked_pqueue"
+        frame tcp as idxTcpF {
+            agent tcp as idxTcp
+        }
+
+        hexagon "route defined in\n""[splunktcp]""\nof inputs.conf" as idxRoute
+        interface "cooked events" as idxCooked
+        interface "raw data" as idxRaw
+        'Connect things together for S2S
+        network --> idxInPq : S2S
+        idxInPq --> tcpin_cooked_pqueue
+        tcpin_cooked_pqueue --> idxTcp
+        idxTcp --> idxRoute
+        idxRoute --> idxCooked
+        idxRoute --> idxRaw
+        
+        'HEC listener, which will include both HTTPOut and HEC
+        queue httpinputq
+        note right 
+            v6.3
+        end note
+        frame "HEC\l(HTTP event collector)" {
+            agent HttpInputServer
+        }
+        
+        'Interfaces here for the various HEC endpoints
+        interface "/services/collector/raw" as idxHecRaw
+        interface "/services/collector/event" as idxHecEvent
+        interface "/services/collector/event?auto_extract_timestamp=true" as idxHecTimestamp
+        interface "/services/collector/s2s" as idxHecS2s
+        note right
+            v8.1
+        end note
+
+        'Connect things together for HEC
+        network --> httpinputq : S2SOverHttp
+        httpinputq --> HttpInputServer
+        HttpInputServer --> idxHecRaw
+        HttpInputServer --> idxHecEvent
+        HttpInputServer --> idxHecTimestamp
+        HttpInputServer --> idxHecS2s
+        idxHecS2s --> idxRaw
+        idxHecS2s --> idxCooked
+        idxHecRaw --> idxRaw
+
+        'Audit trail
+        agent AuditTailManager as idxAtm
+        queue auditqueue as idxAuditq
+        'Connect together the audittrail stuff
+        idxAtm --> idxAuditq
+    }
+
+    'Parsing group of things
+    rectangle "Parsing" as idxP #transparent;line:gray;line.dashed {
+        'Parsing queue
+        queue "parsingQueue" as idxPq
+        frame "Parsing" as idxPp {
+            agent "utf8" as idxUtf8
+            note left
+                UTF Encoding
+            end note
+            agent "linebreaker" as idxLb
+            note left
+                Line Breaking
+            end note
+            agent "metrics" as idxMetrics 
+            note left
+                Metric Processing
+            end note
+            note right of idxMetrics
+                v7.0
+            end note
+            agent "header" as idxPHeader
+            note left
+                Header Processing
+            end note
+            'Connect the things in this group together
+            'first connect the raw stream to the parsing
+            idxRaw --> idxPq
+            idxPq --> idxUtf8
+            idxUtf8 --> idxLb 
+            idxLb --> idxMetrics
+            idxMetrics --> idxPHeader
+        }
+        'Configuration notes for parsing pipeline
+        note left of idxPp
+            == Configuration
+            === props.conf
+            * ""CHARSET""
+            * ""LINE_BREAKER""
+            * ""TRUNCATE""
+            * ""METRICS_PROTOCOL"" (v7.0)
+            * ""STATSD-DIM-TRANSFORMS"" (v7.0)
+            === transforms.conf
+            * ""[statsd-dims:<stanza>]"" (v7.0)
+        end note
+
+        'Merging pipeline and queue
+        queue aggQueue as idxAggQ
+        frame Merging as idxMerging {
+            agent aggregator AS idxpMAgg
+            note right of idxpMAgg
+                * Line Merging (identify each event)
+                * Timestamp Extracting
+            end note
+            'Connect things together
+            idxAggQ --> idxpMAgg
+            idxPHeader --> idxAggQ
+            idxHecTimestamp --> idxAggQ
+        }
+        'Configuration notes for merging pipeline
+        note left of idxMerging
+            == Configuration
+            === props.conf
+            * ""SHOULD_LINEMERGE""
+            * ""BREAK_ONLY_BEFORE""
+            * ""MUST_BREAK_AFTER""
+            * ""MAX_EVENTS""
+            * ""TIME_PREFIX""
+            * ""TIME_FORMAT""
+            * ""MAX_TIMESTAMP_LOOKAHEAD""
+            * ""DATETIME_CONFIG""
+            * ""MAX_DAYS_AGO""
+            * ""MAX_DAYS_HENCE""
+            * ""TZ""
+        end note
+
+        'Fancy new ruleset pipeline for cooked events
+        'Note that this means even cooked events can be modified with Ingest Actions
+        queue "ruleset" as idxRulesetq
+        note right
+            v9.0
+        end note
+        frame Ruleset as idxRuleset {
+            agent "regexreplacement\n(""RULESET"" only)" as idxRulesetRegex
+            note right
+                v9.0
+                Ingest Actions
+            end note
+            'Connect things together for this pipeline
+            idxCooked--> idxRulesetq
+            idxRulesetq --> idxRulesetRegex
+        }
+        'Configuration notes for ingest actions
+        note left of idxRuleset
+            == Configuration
+            === props.conf
+            * ""RULESET-"" (works like ""TRANSFORMS"", but works on cooked events)
+            * ""RULESET_DESC-""
+            === transforms.conf
+            * ""STOP_PROCESSING_IF"" as called from props
+        end note
+        
+        'Typing pipeline
+        queue typingQueue as idxTypingq
+        frame Typing as idxTyping {
+            'New tee for ingest actions preview
+            agent tee as idxTee
+            note right
+                v9.0
+            end note
+            note left of idxTee
+                Ingest Actions preview
+            end note
+            agent regexreplacement as idxRegex
+            note left
+                Regex (Field Extraction, Routing)
+            end note
+            agent metricschema as idxMetricSchema
+            note left
+                Log to Metric
+            end note
+            note right of idxMetricSchema
+                v7.2
+            end note
+            agent annotator as idxAnnotator
+            note left
+                Punct. Extracting
+            end note
+            'Connect things to this group
+            idxpMAgg --> idxTypingq
+            idxHecEvent --> idxTypingq
+            'Connect the things in this group together
+            idxTypingq --> idxTee
+            idxTee --> idxRegex
+            idxRegex --> idxMetricSchema
+            idxMetricSchema --> idxAnnotator
+            ' Some special stuff for CLONE_SOURCETYPE
+            control CLONE_SOURCETYPE as idxCloneST
+            'label "new sourcetype" as idxNewST
+            idxRegex --> idxCloneST
+            'idxCloneST --> idxNewST
+            idxCloneST --> idxRegex : copy with new sourcetype
+        }
+        'Configuration notes for indexing pipeline
+        note left of idxTyping
+            == Configuration
+            === props.conf
+            * ""TRANSFORMS-<stanza>""
+            * ""SEDCMD""
+            * ""ANNOTATE_PUNCT""
+            * ""METRICS-SCHEMA-TRANSFORMS"" (v7.2)
+            === transforms.conf
+            * ""SOURCE_KEY""
+            * ""DEST_KEY""
+            * ""REGEX""
+            * ""FORMAT""
+            * ""CLONE_SOURCETYPE"" (v6.2)
+            * ""INGEST_EVAL"" (v7.2)
+            * ""METRIC-SCHEMA-"" (v7.2)
+        end note
+    }
+
+    'Indexing stuff
+    rectangle "Indexing" as idxIndexing #transparent;line:gray;line.dashed {
+        queue "indexQueue" as idxIdxq
+        frame "IndexerPipe" as idxIdxPipe {
+            agent "DestinationKey" as idxDestKey
+            note right
+                v9.0
+            end note
+            note left of idxDestKey
+                Ingest Actions
+            end note
+            agent "S2SOverHttp" as idxS2sHTTP
+            note right
+                v8.1
+            end note
+            note left of idxS2sHTTP
+                S2S over HTTP out
+            end note
+            agent "tcp-output-generic-processor" as idxTcpOut
+            note left of idxTcpOut
+                S2S out 
+            end note
+            agent "syslog-output-generic-processor" as idxUdpOut
+            note left of idxUdpOut
+                Syslog out
+            end note
+            agent "indexandforward" as idxIdxFwd
+            note left
+                Indexing when forwarding
+            end note
+            agent "signing" as idxSigning
+            note left
+                Block signing
+                (deprecated in v5.0, removed in 6.2)
+            end note
+            agent "indexer" as idxIdx
+            note left
+                License Volume calculation
+                Writing to the disk (indexing)
+            end note
+            agent "indexer_thruput" as idxIdxThru
+            note left
+                metrics calculation
+            end note
+            'Connect things to this pipeline
+            idxAnnotator --> idxIdxq
+            idxRulesetRegex --> idxIdxq
+            idxAuditq --> idxIdxq
+            'Connect the stuff in this group together
+            idxTcpOut --> idxUdpOut
+            idxUdpOut --> idxIdxFwd
+            idxIdxFwd --> idxSigning
+            idxSigning --> idxIdx
+            idxIdx --> idxIdxThru
+            idxIdxq --> idxDestKey
+            idxDestKey --> idxS2sHTTP
+            idxS2sHTTP --> idxTcpOut
+        }
+        'Configurations for indexing
+        note left of idxIdxPipe
+            == Configuration
+            === outputs.conf
+            * ""forwardedindex.""
+            * ""useACK""
+            * ""[rfs:<name>]""
+            === indexes.conf
+        end note
+        
+        'These are targets for the indexing pipeline
+        'HEC
+        interface "HTTP Out" as idxIdxHttpOut
+        'TCP
+        queue "tcpout_queue\nper group" as idxTcpOutq
+        'Indexing
+        folder "Index directory" as idxDir
+        'S3
+        queue rfs as idxRfsq
+        note right
+            v9.0
+        end note
+        
+        'Connect things from the indexing pipe to their targets that are on the indexer
+        'Targets that are external to the indexer are at the end
+        'Dest key
+        idxDestKey --> idxRfsq
+        'HEC out
+        idxS2sHTTP --> idxIdxHttpOut
+        'TCP out
+        idxTcpOut --> idxTcpOutq
+        'Disk
+        idxIdx --> idxDir
+    }
+    
+    'Nullqueue hanging out by itself, should most likely go someplace
+    queue nullQueue as idxNQ
+    frame nullQueue as idxNullQueueFrame {
+        agent nullQueue as idxNullQueueAgent
+    }
+    interface "/dev/null" as IDXdevnull
+    'Connect the nullqueue stuff together
+    idxNQ --> idxNullQueueAgent
+    idxNullQueueAgent --> IDXdevnull
+
+    'Stash parsing is also hanging out on its own
+    'Should there be something at the input area to connect to this?
+    agent stashparsing as idxStash
+    note top of idxStash
+        for summary indexing
+    end note
+    frame stashparsing as idxStashf {
+        agent utf8 as idxStashUtf8
+        agent linebreaker as idxStashLb
+        agent header as idxStashHeader
+        agent aggregator as idxStashAgg
+        agent regexreplacement as idxStashRegex
+        'Connect all of these together
+        idxStash --> idxStashUtf8
+        idxStashUtf8 --> idxStashLb
+        idxStashLb --> idxStashHeader
+        idxStashHeader --> idxStashAgg
+        idxStashAgg --> idxStashRegex
+        idxStashRegex --> idxIdxq
+    }
+}
+' index pipeline targets that are outside of the indexer itself
+interface "/services/collector/s2s\non another instance" as idxIdxHttpOutDest
+interface "tcp transport" as tcpout
+interface "udp transport" as udpout
+cloud AWS
+folder "Compressed JSON in S3" as idxRfsS3
+
+'make the connections to the external targets
+'HEC out
+idxIdxHttpOut --> idxIdxHttpOutDest
+'tcp
+idxTcpOutq --> tcpout
+'UDP out
+idxUdpOut --> udpout
+'AWS
+idxRfsq --> AWS 
+AWS --> idxRfsS3
+
+@enduml

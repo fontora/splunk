@@ -1,26 +1,26 @@
 # Splunk Core - Install
 
-- Date: 2023.01.13
-- Splunk Core: v9.0.3
-- OS: RHEL 7 & 8, CentOS 7 & 8, Rocky 8, Ubuntu 18/20/22 LTS, AWS Linux 2
+- Date: 2023.04.16
+- Splunk Core: v9.0.4.1
+- OS: RHEL 8 & 9
 
 ## Base install
 
 ```bash
 # Install required packages
-dnf install wget
+dnf install -y wget
 
-# Download the Splunk Core 9.0.3
-wget -O splunk-9.0.3-dd0128b1f8cd-Linux-x86_64.tgz "https://download.splunk.com/products/splunk/releases/9.0.3/linux/splunk-9.0.3-dd0128b1f8cd-Linux-x86_64.tgz"
+# Download the Splunk Core 9.0.4.1
+wget -O splunk-9.0.4.1-419ad9369127-Linux-x86_64.tgz "https://download.splunk.com/products/splunk/releases/9.0.4.1/linux/splunk-9.0.4.1-419ad9369127-Linux-x86_64.tgz"
 
 # Download the MD5 hash
-wget -O splunk-9.0.3-dd0128b1f8cd-Linux-x86_64.tgz.md5 'https://download.splunk.com/products/splunk/releases/9.0.3/linux/splunk-9.0.3-dd0128b1f8cd-Linux-x86_64.tgz.md5'
+wget -O splunk-9.0.4.1-419ad9369127-Linux-x86_64.tgz.md5 "https://download.splunk.com/products/splunk/releases/9.0.4.1/linux/splunk-9.0.4.1-419ad9369127-Linux-x86_64.tgz.md5"
 
 # Check the MD5 hash
-md5sum -c splunk-9.0.3-dd0128b1f8cd-Linux-x86_64.tgz.md5
+md5sum -c splunk-9.0.4.1-419ad9369127-Linux-x86_64.tgz.md5 
 
 # Extract Splunk
-sudo tar -zxvf splunk-9.0.3-dd0128b1f8cd-Linux-x86_64.tgz -C /opt/
+sudo tar -zxvf splunk-9.0.4.1-419ad9369127-Linux-x86_64.tgz -C /opt/
 
 # Add a splunk user
 sudo useradd splunk
@@ -33,7 +33,7 @@ sudo install -o splunk -g splunk -m 644 /dev/null /opt/splunk/etc/system/local/u
 sudo cat > /opt/splunk/etc/system/local/user-seed.conf << EOL
 [user_info]
 USERNAME = admin
-PASSWORD = <ENTER_PASSWORD_HERE>
+PASSWORD = changeme2
 EOL
 
 # Enable Splunk to start automatically using systemd
@@ -99,6 +99,10 @@ sudo firewall-cmd --reload
 ```bash
 # Overly aggressive reboot will confirm everything works as expected
 sudo reboot
+
+# Check cgroups version (v1 or v2), v2 is not compatible with WLM
+# RHEL 9 instructions to enable v1: https://access.redhat.com/solutions/6955882
+mount -l | grep cgroup
 
 # Verify ulimits, and then monitor
 sudo grep ulimit /opt/splunk/var/log/splunk/splunkd.log
