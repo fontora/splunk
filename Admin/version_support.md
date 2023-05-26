@@ -9,7 +9,7 @@ ES and ITSI support is tied to the Splunk version running: https://docs.splunk.c
 | Version | Released | End of Support | Criteria |
 | ------- | -------- | -------------- | -------- |
 | 9.0 | 2022.06.14 | 2024.06.14 | 24 Months   |
-| 8.2 | 2021.05.12 | 2023.05.12 | 24 Months   |
+| 8.2 | 2021.05.12 | 2023.09.40 | 24 Months * |
 | 8.1 | 2020.10.19 | 2023.04.19 | 24 Months * |
 | 8.0 | 2019.10.22 | 2021.10.22 | 24 Months   |
 | 7.3 | 2019.06.04 | 2021.10.22 | 24 Months * |
@@ -29,7 +29,8 @@ ES and ITSI support is tied to the Splunk version running: https://docs.splunk.c
 
 | Version | Released | End of Support | Criteria | End of Extended Support | Criteria |
 | ------- | -------- | -------------- | -------- | ----------------------- | -------- |
-| 8.2 | 2021.05.12 | 2023.05.12 | 24 Months   | 2026.05.12 | 36 Months |
+| 9.0 | 2022.06.14 | 2024.06.14 | 24 Months   | 2027.06.14 | 36 Months |
+| 8.2 | 2021.05.12 | 2023.09.30 | 24 Months * | 2026.05.12 | 36 Months |
 | 8.1 | 2020.10.19 | 2023.04.19 | 24 Months * | 2025.10.22 | 36 Months |
 | 8.0 | 2019.10.22 | 2021.10.22 | 24 Months   | 2024.10.22 | 36 Months |
 | 7.3 | 2019.06.04 | 2021.10.22 | 24 Months * | 2024.06.04 | 36 Months |
@@ -48,6 +49,7 @@ ES and ITSI support is tied to the Splunk version running: https://docs.splunk.c
 
 | Version | Release Date | End of Support | Criteria |
 | ------- | ------------ | -------------- | -------- |
+| 7.1 | 2023.01.11 | 2025.01.11 | 24 Months   |
 | 7.0 | 2021.12.16 | 2023.12.16 | 24 Months   |
 | 6.6 | 2021.06.30 | 2023.06.30 | 24 Months   |
 | 6.5 | 2021.03.01 | 2023.03.01 | 24 Months   |
@@ -65,6 +67,9 @@ ES and ITSI support is tied to the Splunk version running: https://docs.splunk.c
 
 | Version | Release Date | End of Support | Criteria |
 | ------- | ------------ | -------------- | -------- |
+| 4.16 | 2023.02.02 | 2025.02.02 | 24 Months   |
+| 4.15 | 2022.11.15 | 2024.11.15 | 24 Months   |
+| 4.14 | 2022.08.08 | 2024.08.08 | 24 Months   |
 | 4.13 | 2022.05.16 | 2021.05.16 | 24 Months   |
 | 4.12 | 2022.01.25 | 2024.01.25 | 24 Months   |
 | 4.11 | 2021.12.08 | 2021.12.08 | 24 Months   |

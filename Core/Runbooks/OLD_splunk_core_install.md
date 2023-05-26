@@ -40,12 +40,11 @@ EOL
 sudo /opt/splunk/bin/splunk enable boot-start -user splunk --accept-license -systemd-managed 1
 
 # Update ulimits in unit file
-# Use systemd drop-in to set ulimits
-sudo mkdir /etc/systemd/system/Splunkd.service.d
-sudo tee /etc/systemd/system/Splunkd.service.d/splunk_ps.conf > /dev/null <<EOF
-[Service]
-LimitNPROC=20480
-EOF
+sudo sed -i 's#^LimitNOFILE=65536#LimitNOFILE=65536\nLimitNPROC=20480#' /etc/systemd/system/Splunkd.service
+
+# Add an alias of 'splunk.service', no one likes capitals in Linux
+sudo sed -i '/^\[Install\]/a Alias=splunk.service' /etc/systemd/system/Splunkd.service
+sudo systemctl enable /etc/systemd/system/Splunkd.service
 ```
 
 ## systemd Checks
