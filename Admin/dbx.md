@@ -27,4 +27,5 @@ DBX > Configuration > Settings, under installation path put "/etc/alternatives/j
 | 17 | 2021.09 | 2026.09 | 2029.09 |
 
 - Version 21 expected 2023.09
-- DBX supports 8 and 11, but not 17 as of 2022.08
+- ~~DBX supports 8 and 11, but not 17 as of 2022.08~~
+- DBX supports 11 and 17 as of 2023.06
