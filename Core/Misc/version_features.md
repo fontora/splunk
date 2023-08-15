@@ -14,6 +14,21 @@ TBA
 
 | Version | Description |
 | ------- | ----------- |
+| 9.1 | Primary Assignment for S2 Bucket improvement |
+| 9.1 | Federated Search improvements |
+| 9.1 | Rolling SHC Upgrade |
+| 9.1 | Ingest Actions improvements |
+| 9.1 | Dashboard Studio improvements |
+| 9.1 | Assist UI |
+| 9.1 | TLS Certificates hot reload |
+| 9.1 | UF Windows least privileged mode |
+| 9.1 | DS scaling improvements |
+| 9.1 | LM Redundancy |
+| 9.1 | Home page redesign |
+| 9.1 | Dark mode for Search app |
+| 9.1 | Search History preserved across SHC |
+| 9.1 | Distributed Health Report (green/red icon) |
+| 9.1 | jQuery 3.5 is now the default |
 | 9.0 | Bloomfilters for TSIDX (make this fast: "| tstats count WHERE index=* earliest=0 latest=now TERM(1.2.3.4) BY _time") |
 | 9.0 | TLS warnings if not enabled for: CLI, Python, MongoDB, Hostname validation |
 | 9.0 | UF Defaults to random password |
@@ -34,6 +49,7 @@ TBA
 | 9.0 | API semantic versioning |
 | 9.0 | Universal forwarder: Collect MacOS Unified Logging data	|
 | 9.0 | Universal forwarder: Configuration changes are logged by default (configuration_change.log) |
+| 9.0 | Python3 is now the default |
 | 8.2.5 | HEC multithreaded |
 | 8.2 | Federated Search |
 | 8.2 | Dashboard Studio built in |

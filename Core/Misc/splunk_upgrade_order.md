@@ -1,5 +1,6 @@
 # Upgrade Order
 
+- https://docs.splunk.com/images/d/d3/Splunk_upgrade_order_of_ops.pdf
 - https://lantern.splunk.com/Splunk_Platform/Product_Tips/Enterprise/Upgrading_Splunk_Enterprise
 
 1. Deployment Server

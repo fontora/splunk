@@ -1,9 +1,8 @@
 # Splunk UF - Install
 
-- Date: 2022.07.04
-- Splunk UF: v9.0.1
-- OS: Ubuntu 20,22
-- OS: RHEL 7 & 8, CentOS 7 & 8, Rocky 8, Ubuntu 16/18/20 LTS, AWS Linux 2
+- Date: 2023.07.27
+- Splunk UF: v9.1.0.1
+- OS: RHEL 8, Ubuntu 22.04
 
 https://docs.splunk.com/Documentation/Splunk/latest/Installation/StartSplunkforthefirsttime
 https://docs.splunk.com/Documentation/Splunk/latest/Security/Secureyouradminaccount
@@ -15,17 +14,17 @@ https://docs.splunk.com/Documentation/Forwarder/9.0.0/Forwarder/Installanixunive
 # Ensure wget is installed
 sudo dnf install -y wget
 
-# Download UF 9.0.3
-wget -O splunkforwarder-9.0.3-dd0128b1f8cd-Linux-x86_64.tgz "https://download.splunk.com/products/universalforwarder/releases/9.0.3/linux/splunkforwarder-9.0.3-dd0128b1f8cd-Linux-x86_64.tgz"
+# Download UF 9.1.0.1
+wget -O splunkforwarder-9.1.0.1-77f73c9edb85-Linux-x86_64.tgz "https://download.splunk.com/products/universalforwarder/releases/9.1.0.1/linux/splunkforwarder-9.1.0.1-77f73c9edb85-Linux-x86_64.tgz"
 
 # Download the MD5 hash
-wget -O splunkforwarder-9.0.3-dd0128b1f8cd-Linux-x86_64.tgz.md5 "https://download.splunk.com/products/universalforwarder/releases/9.0.3/linux/splunkforwarder-9.0.3-dd0128b1f8cd-Linux-x86_64.tgz.md5"
+wget -O splunkforwarder-9.1.0.1-77f73c9edb85-Linux-x86_64.tgz.md5 "https://download.splunk.com/products/universalforwarder/releases/9.1.0.1/linux/splunkforwarder-9.1.0.1-77f73c9edb85-Linux-x86_64.tgz.md5"
 
 # Check the MD5 hash 
-md5sum -c splunkforwarder-9.0.3-dd0128b1f8cd-Linux-x86_64.tgz.md5
+md5sum -c splunkforwarder-9.1.0.1-77f73c9edb85-Linux-x86_64.tgz.md5
 
 # Extract Splunk
-sudo tar -zxvf splunkforwarder-9.0.3-dd0128b1f8cd-Linux-x86_64.tgz -C /opt/
+sudo tar -zxvf splunkforwarder-9.1.0.1-77f73c9edb85-Linux-x86_64.tgz -C /opt/
 
 # Add a splunk user
 sudo useradd -m splunk
@@ -48,5 +47,5 @@ sudo /opt/splunkforwarder/bin/splunk start --accept-license --no-prompt
 sudo reboot
 
 # Monitor log
-sudo tail -F /opt/splunk/var/log/splunk/splunkd.log
+sudo tail -F /opt/splunkforwarder/var/log/splunk/splunkd.log
 ```
