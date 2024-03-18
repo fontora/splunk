@@ -2,9 +2,10 @@
 
 | Version | Codename |
 | ------- | -------- |
+| 9.2 | Cobalt |
 | 9.1 | Beryllium |
 | 9.0 | Aurum |
-| 8.3 | Twilight |
+| 8.3 | Twilight (cancelled) |
 | 8.2 | Scootaloo |
 | 8.1 | Rarity |
 | 8.0 | Quake |

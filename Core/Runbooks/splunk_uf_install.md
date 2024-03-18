@@ -1,12 +1,8 @@
 # Splunk UF - Install
 
-- Date: 2023.07.27
+- Date: 2023.08.17
 - Splunk UF: v9.1.0.1
-- OS: RHEL 8, Ubuntu 22.04
-
-https://docs.splunk.com/Documentation/Splunk/latest/Installation/StartSplunkforthefirsttime
-https://docs.splunk.com/Documentation/Splunk/latest/Security/Secureyouradminaccount
-https://docs.splunk.com/Documentation/Forwarder/9.0.0/Forwarder/Installanixuniversalforwarder
+- OS: RHEL 8 & 9
 
 ## Base install
 
@@ -32,12 +28,8 @@ sudo useradd -m splunk
 # Change ownership of the extracted files 
 sudo chown -R splunk: /opt/splunkforwarder/
 
-# Enable Splunk to start automatically using systemd - don't create a local admin user
 # Generate random password, 
 sudo /opt/splunkforwarder/bin/splunk start --accept-license --gen-and-print-passwd
-
-# Generate no admin username
-sudo /opt/splunkforwarder/bin/splunk start --accept-license --no-prompt
 ```
 
 ## Verification
