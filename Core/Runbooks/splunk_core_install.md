@@ -10,7 +10,7 @@
 # Ensure wget is installed
 sudo dnf install -y wget
 
-# Download the Splunk Core 9.1.0.2
+# Download the Splunk Core 9.2.1
 wget -O splunk-9.2.1-78803f08aabb-Linux-x86_64.tgz "https://download.splunk.com/products/splunk/releases/9.2.1/linux/splunk-9.2.1-78803f08aabb-Linux-x86_64.tgz"
 
 # Download the MD5 hash
@@ -62,6 +62,7 @@ pidof systemd
 
 ```bash
 # Create a systemd unit file to disable THP
+# https://www.kernel.org/doc/html/next/admin-guide/mm/transhuge.html
 sudo cat > /etc/systemd/system/disable-thp.service << EOL
 [Unit]
 Description=Disable Transparent Huge Pages (THP)
