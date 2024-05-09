@@ -68,7 +68,8 @@ sudo cat > /etc/systemd/system/disable-thp.service << EOL
 Description=Disable Transparent Huge Pages (THP)
 
 [Service]
-Type=simple
+Type=oneshot
+RemainAfterExit=True
 ExecStart=/bin/sh -c "echo 'never' > /sys/kernel/mm/transparent_hugepage/enabled && echo 'never' > /sys/kernel/mm/transparent_hugepage/defrag"
 
 [Install]
