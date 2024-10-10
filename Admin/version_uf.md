@@ -17,7 +17,8 @@ Major considerations for older UFs:
 
 | Kernel Version | UF Version |
 | -------------- | ---------- |
-| 3.x+, 4.x+ or 5.x+ | 9.2.x |
+| 4.x+, 5.x+, 6.x+ | 9.3.x |
+| 3.x+ | 9.2.3 |
 
 ## Linux 32 Bit
 
@@ -30,16 +31,16 @@ Major considerations for older UFs:
 
 | Windows Version | UF Version |
 | --------------- | ---------- |
-| Windows 11      | 9.2.x      |
-| Windows 10      | 9.2.x      |
+| Windows 11      | 9.3.x      |
+| Windows 10      | 9.3.x      |
 | Windows 8.1     | 7.3.3      |
 | Windows 8       | 6.6.12.1   |
 | Windows 7       | 6.4.11     |
 | Windows Vista   | 6.1.11     |
 | Windows XP      | 6.1.11     |
 | | |
-| Windows Server 2022    | 9.2.x    |
-| Windows Server 2019    | 9.2.x    |
+| Windows Server 2022    | 9.3.x    |
+| Windows Server 2019    | 9.3.x    |
 | Windows Server 2016    | 9.2.x    |
 | Windows Server 2012 R2 | 9.1.4    |
 | Windows Server 2012    | 9.1.4    |
@@ -52,12 +53,12 @@ Major considerations for older UFs:
 
 | Windows Version | UF Version |
 | --------------- | ---------- |
-| Windows 10      | 9.2.x      |
-| Windows 8.1     | 7.2.10.1   |
-| Windows 8       | 6.6.12.1   |
-| Windows 7       | 6.4.11     |
-| Windows Vista   | 6.1.14     |
-| Windows XP      | 6.1.14     |
+| Windows 10      | 9.3.x    |
+| Windows 8.1     | 7.2.10.1 |
+| Windows 8       | 6.6.12.1 |
+| Windows 7       | 6.4.11   |
+| Windows Vista   | 6.1.14   |
+| Windows XP      | 6.1.14   |
 | | |
 | Windows Server 2008 R2 | 6.3.14 |
 | Windows Server 2008    | 6.3.14 |
